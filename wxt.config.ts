@@ -14,14 +14,14 @@ export default defineConfig({
     name: "Sift",
     browser_specific_settings: {
       gecko: {
-        id: "{70c8d535-6562-4b28-9ec1-b2f71ad857a4}",
-        strict_min_version: "109.0",
+        id: "{08db9950-75b9-4264-a900-8ce20131614f}",
+        strict_min_version: "140.0",
         data_collection_permissions: {
           required: ["none"],
         },
       },
       gecko_android: {
-        strict_min_version: "113.0",
+        strict_min_version: "142.0",
       },
     },
     permissions: ["storage", "activeTab", "tabs"],

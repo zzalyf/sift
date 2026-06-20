@@ -1,6 +1,6 @@
 /* Removes feed */
 
-:root[linkedin-hide-feed="true"] {
+:root:not([sift-paused="true"])[linkedin-hide-feed="true"] {
   div[data-testid="mainFeed"] > :not(:nth-child(1)) {
     display: none;
   }
@@ -9,7 +9,7 @@
   }
 }
 
-:root[linkedin-hide-premium-upsells="true"] {
+:root:not([sift-paused="true"])[linkedin-hide-premium-upsells="true"] {
   /* premium upsells */
   div:has(> *[data-view-name="premium-nav-upsell-text"]) {
     display: none !important;
@@ -40,7 +40,7 @@
 }
 
 // hides the add to your feed section
-:root[linkedin-hide-add-to-your-feed="true"]
+:root:not([sift-paused="true"])[linkedin-hide-add-to-your-feed="true"]
   div:has(> * > [href*="/mynetwork/discover-hub/"]) {
   display: none;
 }

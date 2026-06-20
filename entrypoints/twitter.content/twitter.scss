@@ -1,10 +1,10 @@
-:root[twitter-hide-grok="true"] {
+:root:not([sift-paused="true"])[twitter-hide-grok="true"] {
 	[href="/i/grok"] {
 		display: none;
 	}
 }
 
-:root[twitter-hide-creator-studio="true"] {
+:root:not([sift-paused="true"])[twitter-hide-creator-studio="true"] {
 	[href*="creator_studio"],
 	[href*="creatorstudio"] {
 		display: none;
@@ -12,13 +12,13 @@
 }
 
 //hides the "What's new" feed on the right sidebar
-:root[twitter-hide-whats-new-feed="true"] {
+:root:not([sift-paused="true"])[twitter-hide-whats-new-feed="true"] {
 	*:has([data-testid*="news_sidebar_article"]):not(:has(input)) {
 		display: none;
 	}
 }
 
-:root[twitter-hide-premium="true"] {
+:root:not([sift-paused="true"])[twitter-hide-premium="true"] {
 	// hides the "Premium" aside on the right sidebar
 	div:has(> aside [href="/i/premium_sign_up"]) {
 		display: none;
@@ -33,7 +33,7 @@
 }
 
 // trending section
-:root[twitter-hide-trending-feed="true"] {
+:root:not([sift-paused="true"])[twitter-hide-trending-feed="true"] {
 	[data-testid="sidebarColumn"] {
 		div:has(> section [data-testid="trend"]) {
 			display: none;
@@ -64,7 +64,7 @@
 }
 
 // who to follow section
-:root[twitter-hide-who-to-follow-feed="true"] {
+:root:not([sift-paused="true"])[twitter-hide-who-to-follow-feed="true"] {
 	// right sidebar
 	[data-testid="sidebarColumn"] {
 		div:has([data-testid="UserCell"]):has(+ :not([data-testid="UserCell"])) {
@@ -127,7 +127,7 @@
 }
 
 // hide following feed
-:root[twitter-hide-feed="true"][page-path="/home/"] {
+:root:not([sift-paused="true"])[twitter-hide-feed="true"][page-path="/home/"] {
 	[data-testid="primaryColumn"] {
 		&:has(nav [role="presentation"]:last-child [aria-selected="true"]) {
 			section {
@@ -138,7 +138,7 @@
 	}
 }
 // hide for you feed
-:root[twitter-hide-for-you-feed="true"][page-path="/home/"] {
+:root:not([sift-paused="true"])[twitter-hide-for-you-feed="true"][page-path="/home/"] {
 	[data-testid="primaryColumn"] {
 		nav [role="presentation"]:first-child {
 			display: none;
@@ -152,7 +152,7 @@
 	}
 }
 
-:root[twitter-hide-explore-feed="true"][page-path="/explore/"] {
+:root:not([sift-paused="true"])[twitter-hide-explore-feed="true"][page-path="/explore/"] {
 	nav:has([href*="/explore/tabs/"]) {
 		display: none;
 	}

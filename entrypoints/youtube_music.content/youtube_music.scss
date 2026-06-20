@@ -1,4 +1,4 @@
-:root[youtube_music-hide-feed="true"][page-path="/"] {
+:root:not([sift-paused="true"])[youtube_music-hide-feed="true"][page-path="/"] {
   #content-wrapper {
     display: none;
   }
@@ -22,7 +22,7 @@
   }
 }
 
-:root[youtube_music-hide-related="true"] {
+:root:not([sift-paused="true"])[youtube_music-hide-related="true"] {
   ytmusic-section-list-renderer[page-type="MUSIC_PAGE_TYPE_TRACK_RELATED"] {
     display: none;
   }
@@ -31,7 +31,7 @@
   }
 }
 
-:root[youtube_music-hide-explore-feed="true"][page-path="/explore/"] {
+:root:not([sift-paused="true"])[youtube_music-hide-explore-feed="true"][page-path="/explore/"] {
   #content-wrapper {
     display: none;
   }
@@ -62,7 +62,7 @@ ytmusic-guide-signin-promo-renderer {
 }
 
 // hides the "Explore" button in the sidebar
-:root[youtube_music-hide-explore-feed="true"]
+:root:not([sift-paused="true"])[youtube_music-hide-explore-feed="true"]
   ytmusic-guide-entry-renderer:nth-child(2) {
   display: none !important;
 }

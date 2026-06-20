@@ -1,5 +1,7 @@
 import { ConfigOption } from "./option";
 import QuickSettingsDropdown from "./QuickSettingsDropdown";
+import ConfirmationDialog from "./confiromationDialog";
+import { showToast } from "./Toast";
 
 type Props = {
   key: string;
@@ -7,6 +9,8 @@ type Props = {
 };
 
 export const ConfigSection = (props: Props) => {
+  let confirmDialogRef!: HTMLDialogElement;
+
   const [values, resource] = createResource(async () => {
     return Promise.all(
       props.config.Keys.map(async (key) => ({
@@ -28,13 +32,13 @@ export const ConfigSection = (props: Props) => {
     let isDefault = true;
     let isMax = true;
     for (const value of state) {
-      if (isDefault && value.value != value.config.Values[0]) isDefault = false; // cannot be default anymore
+      if (isDefault && value.value != value.config.Values[0]) isDefault = false;
       if (
         isMax &&
         value.value != value.config.Max &&
         value.value != value.config.Values[0]
       )
-        isMax = false; // cannot be max anymore
+        isMax = false;
     }
 
     if (isMax && isDefault && !isMaxRequired()) return "Default";
@@ -43,26 +47,30 @@ export const ConfigSection = (props: Props) => {
     return "Custom";
   };
 
+  function applyDefault() {
+    const items = (values() ?? []).map(({ config }) => ({
+      key: config.Key,
+      value: config.Values[0],
+    }));
+    storage.setItems(items);
+    resource.refetch();
+    showToast(`${props.config.HumanName}: Default`);
+  }
+
+  function applyMax() {
+    const items = (values() ?? []).map(({ config }) => ({
+      key: config.Key,
+      value: config.Max,
+    }));
+    storage.setItems(items);
+    resource.refetch();
+    showToast(`${props.config.HumanName}: Max`);
+  }
+
   function onChange(n: string) {
     if (n == "Custom") return;
-
-    if (n == "Default") {
-      const items = (values() ?? []).map(({ config }) => ({
-        key: config.Key,
-        value: config.Values[0],
-      }));
-      storage.setItems(items);
-      resource.refetch();
-    }
-
-    if (n == "Max") {
-      const items = (values() ?? []).map(({ config }) => ({
-        key: config.Key,
-        value: config.Max,
-      }));
-      storage.setItems(items);
-      resource.refetch();
-    }
+    if (n == "Default") applyDefault();
+    if (n == "Max") confirmDialogRef.showModal();
   }
 
   return (
@@ -90,10 +98,16 @@ export const ConfigSection = (props: Props) => {
             onChange={(newValue) => {
               storage.setItem(option.config.Key, newValue);
               resource.refetch();
+              showToast(`${option.config.HumanName}: ${newValue}`);
             }}
           />
         )}
       </For>
+      <ConfirmationDialog
+        ref={(el) => (confirmDialogRef = el)}
+        message={`Apply maximum restrictions for ${props.config.HumanName}?`}
+        onConfirm={applyMax}
+      />
     </section>
   );
 };

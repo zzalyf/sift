@@ -20,9 +20,12 @@ export const ConfigOption = (props: Props) => {
     <div class="flex flex-row items-center overflow-auto bg-surface rounded-xl p-2 pr-4 cursor-pointer">
       <label
         for={props.config.Key}
-        class="p-2 flex-1 cursor-pointer capitalize"
+        class="p-2 flex-1 cursor-pointer capitalize flex flex-col gap-0.5"
       >
         {props.config.HumanName}
+        <Show when={props.config.description}>
+          <span class="text-xs text-secondary normal-case">{props.config.description}</span>
+        </Show>
       </label>
       {isBooleanOption(props.config.Values) ? (
         <input

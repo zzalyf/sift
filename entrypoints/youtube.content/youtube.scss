@@ -1,27 +1,27 @@
 @use "./shorts.scss";
 
 // hides the more from youtube section that contains premium, music, and youtube kids
-:root[youtube-hide-more-from-youtube="true"] {
+:root:not([sift-paused="true"])[youtube-hide-more-from-youtube="true"] {
 	ytd-guide-section-renderer:has(a[href*="/premium"]) {
 		display: none;
 	}
 }
 
 // hides the explore section in the sidebar
-:root[youtube-hide-explore="true"] {
+:root:not([sift-paused="true"])[youtube-hide-explore="true"] {
 	ytd-guide-section-renderer:has(a[href*="/gaming"]) {
 		display: none;
 	}
 }
 
 // hides the you section with history, watch later, liked videos, and so on
-:root[youtube-hide-you-section="true"] {
+:root:not([sift-paused="true"])[youtube-hide-you-section="true"] {
 	ytd-guide-section-renderer:has([href="/feed/history"]) {
 		display: none;
 	}
 }
 
-:root[youtube-hide-up-next-feed="true"] {
+:root:not([sift-paused="true"])[youtube-hide-up-next-feed="true"] {
 	// hides recommended section while still allowing playlists to be shown
 	// also makes sure that video is centered
 	#secondary:not(
@@ -63,7 +63,7 @@
 	}
 }
 
-:root[youtube-hide-subscription-feed="true"] {
+:root:not([sift-paused="true"])[youtube-hide-subscription-feed="true"] {
 	ytd-mini-guide-entry-renderer:has([href="/feed/subscriptions"]),
 	ytd-guide-entry-renderer:has([href="/feed/subscriptions"]) {
 		display: none;
@@ -83,8 +83,8 @@
 	}
 }
 
-:root[youtube-hide-subscription-feed="true"][page-path="/feed/subscriptions/"],
-:root[page-path="/"][youtube-hide-feed="true"] {
+:root:not([sift-paused="true"])[youtube-hide-subscription-feed="true"][page-path="/feed/subscriptions/"],
+:root:not([sift-paused="true"])[page-path="/"][youtube-hide-feed="true"] {
 	// hiding the feed
 	ytd-rich-grid-renderer {
 		display: none;
@@ -144,7 +144,7 @@
 }
 
 // hides the end screen bits
-:root[youtube-hide-end-screen="true"] {
+:root:not([sift-paused="true"])[youtube-hide-end-screen="true"] {
 	.ytp-ce-element {
 		display: none !important;
 	}

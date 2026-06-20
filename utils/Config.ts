@@ -7,6 +7,8 @@ export default async function Config(config: PlatformConfiguration, onUpdate?: (
 }
 
 function fromStorage(config: PlatformConfiguration, onUpdate?: (key: string, value: string) => void) {
+	const pauseUnwatch = initPause(config);
+
 	let unWatches = config.Keys.map(async (key) => {
 		let value = await storage.getItem<string>(key.Key);
 		update(key.Key, value ?? key.Values[0]);
@@ -18,11 +20,25 @@ function fromStorage(config: PlatformConfiguration, onUpdate?: (key: string, val
 		});
 	});
 	return {
-		unwatch: () => unWatches.forEach(async (unwatch) => (await unwatch)()),
+		unwatch: () => {
+			pauseUnwatch.then((fn) => fn?.());
+			unWatches.forEach(async (unwatch) => (await unwatch)());
+		},
 	};
 }
 
+async function initPause(config: PlatformConfiguration) {
+	const val = await storage.getItem<string>(config.PauseKey);
+	setPaused((val ?? "false") === "true");
+	return storage.watch<string>(config.PauseKey, (v) => setPaused((v ?? "false") === "true"));
+}
+
+function setPaused(paused: boolean) {
+	document.documentElement.toggleAttribute("sift-paused", paused);
+}
+
 function fromDefaults(config: PlatformConfiguration, onUpdate?: (key: string, value: string) => void) {
+	setPaused(false);
 	config.Keys.map((key) => {
 		const value = key.Values[0];
 		onUpdate?.(key.Key, value);
@@ -32,7 +48,7 @@ function fromDefaults(config: PlatformConfiguration, onUpdate?: (key: string, va
 }
 
 function update(key: string, value: string) {
-	key = key.replaceAll("local:", "");
+	key = key.replace(/^(local|sync):/, "");
 	document.querySelector(":root")?.setAttribute(key, value);
 }
 
@@ -41,86 +57,99 @@ export type ConfigurationKey = {
 	Key: StorageItemKey;
 	Values: string[];
 	Max: string;
+	description?: string;
 };
 
 export type PlatformConfiguration = {
 	HumanName: string;
 	Keys: ConfigurationKey[];
+	PauseKey: StorageItemKey;
 };
 
 export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 	"www.youtube.com": {
-		Keys: [
-			...shortFormKeys("youtube"),
-			...feedKeys("youtube", ["up-next", "subscription"]),
-			booleanKey("local:youtube-hide-more-from-youtube", "Hide More From Youtube"),
-			booleanKey("local:youtube-hide-explore", "Hide Explore Sidebar Section"),
-			booleanKey("local:youtube-hide-you-section", "Hide You Sidebar Section", false),
-			booleanKey("local:youtube-hide-end-screen", "Hide End Screen bits"),
-		],
 		HumanName: "YouTube",
+		PauseKey: "sync:youtube-paused",
+		Keys: [
+			...shortFormKeys("youtube", "Controls visibility of YouTube Shorts"),
+			...feedKeys("youtube", ["up-next", "subscription"]),
+			booleanKey("sync:youtube-hide-more-from-youtube", "Hide More From Youtube", true, "Hides Premium, Music, and Kids sections in the sidebar"),
+			booleanKey("sync:youtube-hide-explore", "Hide Explore Sidebar Section", true, "Hides Gaming, Podcasts, and Channels sections in the sidebar"),
+			booleanKey("sync:youtube-hide-you-section", "Hide You Sidebar Section", false, "Hides History, Watch Later, and Liked Videos in the sidebar"),
+			booleanKey("sync:youtube-hide-end-screen", "Hide End Screen bits", true, "Hides end screen cards and video suggestions"),
+		],
 	},
 	"www.linkedin.com": {
+		HumanName: "LinkedIn",
+		PauseKey: "sync:linkedin-paused",
 		Keys: [
 			...feedKeys("linkedin"),
-			booleanKey("local:linkedin-hide-premium-upsells", "Hide Premium Upsells"),
-			booleanKey("local:linkedin-hide-add-to-your-feed", "Hide Add to Your Feed"),
+			booleanKey("sync:linkedin-hide-premium-upsells", "Hide Premium Upsells", true, "Hides Premium subscription prompts throughout the site"),
+			booleanKey("sync:linkedin-hide-add-to-your-feed", "Hide Add to Your Feed", true, "Hides the 'Add to your feed' suggestions section"),
 		],
-		HumanName: "LinkedIn",
 	},
 	"www.reddit.com": {
-		Keys: feedKeys("reddit", ["explore", "related-posts", "popular-communities", "news"]),
 		HumanName: "Reddit",
+		PauseKey: "sync:reddit-paused",
+		Keys: feedKeys("reddit", ["explore", "related-posts", "popular-communities", "news"]),
 	},
 	"www.tiktok.com": {
-		Keys: [...shortFormKeys("tiktok"), ...feedKeys("tiktok", ["explore", "live", "following", "search"])],
 		HumanName: "TikTok",
+		PauseKey: "sync:tiktok-paused",
+		Keys: [...shortFormKeys("tiktok", "Controls visibility of short video content"), ...feedKeys("tiktok", ["explore", "live", "following", "search"])],
 	},
 	"www.facebook.com": {
-		Keys: [...feedKeys("facebook", ["games", "marketplace", "videos"]), ...shortFormKeys("facebook")],
 		HumanName: "Facebook",
+		PauseKey: "sync:facebook-paused",
+		Keys: [...feedKeys("facebook", ["games", "marketplace", "videos"]), ...shortFormKeys("facebook", "Controls visibility of Reels")],
 	},
 	"www.instagram.com": {
-		Keys: [
-			booleanKey("local:instagram-hide-feed", "Hide Following Feed"),
-			booleanKey("local:instagram-hide-for-you-feed", "Hide For You Feed"),
-			...feedKeys("instagram", ["explore", "more-from"]).slice(1),
-			booleanKey("local:instagram-hide-explore-button", "Hide Explore Button"),
-			...shortFormKeys("instagram"),
-		],
 		HumanName: "Instagram",
+		PauseKey: "sync:instagram-paused",
+		Keys: [
+			booleanKey("sync:instagram-hide-feed", "Hide Following Feed", true, "Hides posts from accounts you follow on the home page"),
+			booleanKey("sync:instagram-hide-for-you-feed", "Hide For You Feed", true, "Hides the algorithmic For You tab on the home page"),
+			...feedKeys("instagram", ["explore", "more-from"]).slice(1),
+			booleanKey("sync:instagram-hide-explore-button", "Hide Explore Button", true, "Hides the Explore/magnifier button in the sidebar"),
+			...shortFormKeys("instagram", "Controls visibility of Reels"),
+		],
 	},
 	"music.youtube.com": {
+		HumanName: "YouTube Music",
+		PauseKey: "sync:youtube_music-paused",
 		Keys: [
 			...feedKeys("youtube_music", ["explore"]),
-			booleanKey("local:youtube_music-hide-related", "Hide Related"),
+			booleanKey("sync:youtube_music-hide-related", "Hide Related", true, "Hides related tracks panel on song pages"),
 		],
-		HumanName: "YouTube Music",
 	},
 	"pinterest.com": {
 		HumanName: "Pinterest",
+		PauseKey: "sync:pinterest-paused",
 		Keys: [...feedKeys("pinterest", ["explore", "search", "related-pins", "board"])],
 	},
 	"bsky.app": {
 		HumanName: "Bluesky",
-		Keys: [...feedKeys("bsky", ["explore"]), booleanKey("local:bsky-hide-trending", "Hide Trending")],
+		PauseKey: "sync:bsky-paused",
+		Keys: [...feedKeys("bsky", ["explore"]), booleanKey("sync:bsky-hide-trending", "Hide Trending", true, "Hides trending topic links in the sidebar")],
 	},
 	"substack.com": {
+		HumanName: "Substack",
+		PauseKey: "sync:substack-paused",
 		Keys: [
 			...feedKeys("substack", ["explore", "up-next", "new-bestsellers", "you-may-know"]),
-			booleanKey("local:substack-hide-related", "Hide Related"),
+			booleanKey("sync:substack-hide-related", "Hide Related", true, "Hides related posts on note pages"),
 		],
-		HumanName: "Substack",
 	},
 	"www.twitter.com": {
-		Keys: [
-			booleanKey("local:twitter-hide-feed", "Hide Following Feed"),
-			...feedKeys("twitter", ["trending", "for-you", "who-to-follow", "whats-new", "explore"]).slice(1),
-			booleanKey("local:twitter-hide-premium", "Hide Premium"),
-			booleanKey("local:twitter-hide-grok", "Hide Grok"),
-			booleanKey("local:twitter-hide-creator-studio", "Hide Creator Studio"),
-		],
 		HumanName: "Twitter/X",
+		PauseKey: "sync:twitter-paused",
+		Keys: [
+			booleanKey("sync:twitter-hide-feed", "Hide Following Feed", true, "Hides posts in the Following tab"),
+			...feedKeys("twitter", ["trending", "for-you", "who-to-follow", "whats-new", "explore"]).slice(1),
+			booleanKey("sync:twitter-hide-premium", "Hide Premium", true, "Hides Premium subscription upsells and buttons"),
+			booleanKey("sync:twitter-hide-grok", "Hide Grok", true, "Hides the Grok AI button in the sidebar"),
+			booleanKey("sync:twitter-hide-creator-studio", "Hide Creator Studio", true, "Hides Creator Studio links in the sidebar"),
+		],
 	},
 };
 
@@ -128,23 +157,49 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 // Utils
 // -------------------------------------------------------------------------------------
 
-function shortFormKeys(platform: string): ConfigurationKey[] {
+const feedDescriptions: Record<string, string> = {
+	"up-next": "Hides recommended videos in the sidebar",
+	"subscription": "Hides the subscriptions feed and sidebar section",
+	"explore": "Hides explore and discovery content",
+	"more-from": "Hides related content suggestions",
+	"trending": "Hides trending topics",
+	"for-you": "Hides the algorithmic For You feed",
+	"who-to-follow": "Hides user follow suggestions",
+	"whats-new": "Hides the What's New panel",
+	"live": "Hides live content",
+	"following": "Hides the Following feed",
+	"search": "Hides content on the Search page",
+	"games": "Hides gaming sections",
+	"marketplace": "Hides the Marketplace feed",
+	"videos": "Hides the Videos/Watch section",
+	"popular-communities": "Hides popular community suggestions",
+	"news": "Hides the News page feed",
+	"related-posts": "Hides related posts in the sidebar",
+	"new-bestsellers": "Hides the New Bestsellers section",
+	"you-may-know": "Hides 'People you may know' suggestions",
+	"related-pins": "Hides related pins on pin pages",
+	"board": "Hides board idea suggestions",
+};
+
+function shortFormKeys(platform: string, description?: string): ConfigurationKey[] {
 	return [
 		{
 			HumanName: "Shortform",
-			Key: `local:${platform}-shortform`,
+			Key: `sync:${platform}-shortform`,
 			Values: ["block", "show", "hide"],
 			Max: "block",
+			description: description ?? "block: prevent access · hide: remove from UI · show: no change",
 		},
 	];
 }
 
-function booleanKey(Key: StorageItemKey, HumanName: string, Default: boolean = true): ConfigurationKey {
+function booleanKey(Key: StorageItemKey, HumanName: string, Default: boolean = true, description?: string): ConfigurationKey {
 	return {
 		HumanName,
 		Key,
 		Max: "true",
 		Values: Default ? ["true", "false"] : ["false", "true"],
+		description,
 	};
 }
 
@@ -154,16 +209,18 @@ function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
 	return [
 		{
 			HumanName: "Hide Home Feed",
-			Key: `local:${platform}-hide-feed`,
+			Key: `sync:${platform}-hide-feed`,
 			Values: ["true", "false"],
 			Max: "true",
+			description: "Hides the main home/timeline feed",
 		},
 		...feeds.map(
 			(feed): ConfigurationKey => ({
 				HumanName: `Hide ${feed.replaceAll("-", " ")} Feed`,
-				Key: `local:${platform}-hide-${feed}-feed`,
+				Key: `sync:${platform}-hide-${feed}-feed`,
 				Values: ["true", "false"],
 				Max: "true",
+				description: feedDescriptions[feed] ?? `Hides the ${feed.replaceAll("-", " ")} feed`,
 			})
 		),
 	];

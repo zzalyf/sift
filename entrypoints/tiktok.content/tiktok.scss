@@ -1,5 +1,5 @@
-:root[tiktok-shortform="block"],
-:root[tiktok-shortform="hide"] {
+:root:not([sift-paused="true"])[tiktok-shortform="block"],
+:root:not([sift-paused="true"])[tiktok-shortform="hide"] {
   // hides buttons used for scrolling
   button[class*="StyledVideoSwitch"],
   div[class*="DivFeedNavigationContainer"] {
@@ -65,7 +65,7 @@
 }
 
 // live button
-:root[tiktok-hide-live-feed="true"] {
+:root:not([sift-paused="true"])[tiktok-hide-live-feed="true"] {
   h2:has([href="/live"]) {
     display: none;
   }
@@ -82,7 +82,7 @@
 }
 
 // explore button
-:root[tiktok-hide-explore-feed="true"] {
+:root:not([sift-paused="true"])[tiktok-hide-explore-feed="true"] {
   h2:has([href="/explore"]) {
     display: none;
   }
@@ -104,7 +104,7 @@
 }
 
 // following button
-:root[tiktok-hide-following-feed="true"] {
+:root:not([sift-paused="true"])[tiktok-hide-following-feed="true"] {
   h2:has([href="/following"]) {
     display: none;
   }
@@ -119,9 +119,9 @@
 }
 
 // mobile
-:root[tiktok-hide-feed="true"],
-:root[tiktok-shortform="block"],
-:root[tiktok-shortform="hide"] {
+:root:not([sift-paused="true"])[tiktok-hide-feed="true"],
+:root:not([sift-paused="true"])[tiktok-shortform="block"],
+:root:not([sift-paused="true"])[tiktok-shortform="hide"] {
   &[page-path="/"],
   &[page-path="/foryou/"] {
     [class*="DivSwiperContainer"] {

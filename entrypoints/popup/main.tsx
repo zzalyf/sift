@@ -1,11 +1,14 @@
 import "@/assets/tailwind.css";
 import { ConfigSection } from "@/components/optionSection";
+import { ConfigurationShape } from "@/utils/Config";
+import { Toast, showToast } from "@/components/Toast";
 import DevPopup from "./devPopup";
 
 function App() {
   const optionsUrl = browser.runtime.getURL("/options.html");
   const [currentConfig, setCurrentConfig] = createSignal<PlatformConfiguration | null>(null);
   const [configKey, setConfigKey] = createSignal<string>("");
+  const [paused, setPaused] = createSignal(false);
   const [showDev, setShowDev] = createSignal(
     import.meta.env.DEV && import.meta.env.WXT_SHOW_DEV_POPUP == "true"
   );
@@ -27,9 +30,20 @@ function App() {
       if (config) {
         setCurrentConfig(config);
         setConfigKey(key);
+        const val = await storage.getItem<string>(config.PauseKey);
+        setPaused(val === "true");
       }
     } catch {}
   });
+
+  async function togglePause() {
+    const config = currentConfig();
+    if (!config) return;
+    const newPaused = !paused();
+    await storage.setItem(config.PauseKey, String(newPaused));
+    setPaused(newPaused);
+    showToast(newPaused ? "Sift paused" : "Sift resumed");
+  }
 
   return (
     <>
@@ -51,17 +65,29 @@ function App() {
               <img src={browser.runtime.getURL("/icon.svg")} class="w-6 h-6" aria-hidden="true" />
               Sift
             </h1>
-            <a
-              href={optionsUrl}
-              target="_blank"
-              class="flex flex-row gap-1 items-center text-sm text-accent hover:text-primary transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              Settings
-            </a>
+            <div class="flex items-center gap-2">
+              <Show when={currentConfig()}>
+                <button
+                  onClick={togglePause}
+                  class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors"
+                  classList={{ "text-secondary": !paused(), "text-primary": paused() }}
+                  title={paused() ? "Resume Sift" : "Pause Sift"}
+                >
+                  {paused() ? "▶ Resume" : "⏸ Pause"}
+                </button>
+              </Show>
+              <a
+                href={optionsUrl}
+                target="_blank"
+                class="flex flex-row gap-1 items-center text-sm text-accent hover:text-primary transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                Settings
+              </a>
+            </div>
           </div>
 
           <Show
@@ -77,6 +103,7 @@ function App() {
             </div>
           </Show>
         </div>
+        <Toast />
       </Show>
     </>
   );

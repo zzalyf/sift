@@ -1,7 +1,7 @@
 /* Hides shorts tab on the channel page */
 
-:root[youtube-shortform="block"],
-:root[youtube-shortform="hide"] {
+:root:not([sift-paused="true"])[youtube-shortform="block"],
+:root:not([sift-paused="true"])[youtube-shortform="hide"] {
   yt-tab-shape[tab-title="Shorts"] {
     display: none;
   }
@@ -70,7 +70,7 @@
 }
 
 // completely blocks shorts
-:root[youtube-shortform="block"] ytd-shorts {
+:root:not([sift-paused="true"])[youtube-shortform="block"] ytd-shorts {
   display: none;
 }
 

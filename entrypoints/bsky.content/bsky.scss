@@ -1,5 +1,5 @@
 // hides feed on home screen
-:root[bsky-hide-feed="true"] {
+:root:not([sift-paused="true"])[bsky-hide-feed="true"] {
   &[page-path="/"] {
     main {
       display: none;
@@ -10,11 +10,11 @@
   }
 }
 
-:root[bsky-hide-trending="true"] [href*="trending"] {
+:root:not([sift-paused="true"])[bsky-hide-trending="true"] [href*="trending"] {
   display: none;
 }
 
-:root[bsky-hide-explore-feed][page-path="/search/"]:not([page-params*="q="]) {
+:root:not([sift-paused="true"])[bsky-hide-explore-feed][page-path="/search/"]:not([page-params*="q="]) {
   div:has([href*="profile"]):not(:has(nav, input)) {
     display: none;
   }

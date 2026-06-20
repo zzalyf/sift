@@ -1,7 +1,7 @@
 @use "./reels.scss";
 
 /* Home page */
-:root[page-path="/"] {
+:root:not([sift-paused="true"])[page-path="/"] {
   &[facebook-hide-feed="true"] *[role="main"] {
     display: none;
   }
@@ -10,25 +10,25 @@
 /* Video page */
 :root[page-path*="/watch/live/"],
 :root[page-path*="/watch/topic/"],
-:root[page-path="/watch/"] {
+:root:not([sift-paused="true"])[page-path="/watch/"] {
   &[facebook-hide-videos-feed="true"] *[role="main"] {
     display: none;
   }
 }
 
-:root[facebook-hide-videos="true"] li:has(a[href*="/watch/"]) {
+:root:not([sift-paused="true"])[facebook-hide-videos="true"] li:has(a[href*="/watch/"]) {
   display: none;
 }
 
 /* Gaming */
-:root[facebook-hide-games-feed="true"] {
+:root:not([sift-paused="true"])[facebook-hide-games-feed="true"] {
   ul:has(a[href*="gaming"]) {
     display: none;
   }
 }
 
 // on the gaming page, hide the feed
-:root[facebook-hide-games-feed="true"][page-path*="/gaming/"] {
+:root:not([sift-paused="true"])[facebook-hide-games-feed="true"][page-path*="/gaming/"] {
   [role="main"],
   [role="navigation"]:has(a[href*="/gaming/following/"]) {
     display: none;
@@ -36,7 +36,7 @@
 }
 
 /* marketplace */
-:root[facebook-hide-marketplace-feed="true"][page-path="/marketplace/"] {
+:root:not([sift-paused="true"])[facebook-hide-marketplace-feed="true"][page-path="/marketplace/"] {
   *[role="main"] {
     display: none;
   }

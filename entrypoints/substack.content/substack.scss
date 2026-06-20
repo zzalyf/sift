@@ -1,13 +1,13 @@
 // has one issue does not fully hide the feed so you can still scroll in it but not see it
 // this is due to that fact that if it has display:none; it infinitely loads more content
-:root[substack-hide-related="true"][page-path*="/note/"] {
+:root:not([sift-paused="true"])[substack-hide-related="true"][page-path*="/note/"] {
 	div:has(> [class*="feedItem"][role="article"]) {
 		opacity: 0;
 		visibility: hidden;
 	}
 }
 
-:root[substack-hide-feed="true"][page-path="/"] {
+:root:not([sift-paused="true"])[substack-hide-feed="true"][page-path="/"] {
 	#reader-nav-page-scroll,
 	[role="region"] {
 		opacity: 0;
@@ -15,7 +15,7 @@
 	}
 }
 
-:root[substack-hide-new-bestsellers-feed="true"] {
+:root:not([sift-paused="true"])[substack-hide-new-bestsellers-feed="true"] {
 	*:has([href*="leaderboard/bestseller"]):has(> * >[data-href="https://substack.com/leaderboard/bestseller/rising"])
 	{
 		display: none;
@@ -34,13 +34,13 @@
 	}
 }
 
-:root[substack-hide-up-next-feed="true"]:not([page-path*="inbox"]) {
+:root:not([sift-paused="true"])[substack-hide-up-next-feed="true"]:not([page-path*="inbox"]) {
 	div:has([href*="post"]):has(> * > [href*="/inbox"]) {
 		display: none;
 	}
 }
 
-:root[substack-hide-explore-feed="true"][page-path*="/explore/"] {
+:root:not([sift-paused="true"])[substack-hide-explore-feed="true"][page-path*="/explore/"] {
 	div:has([href*="note"]):not(:has(input)) {
 		opacity: 0;
 		visibility: hidden;
@@ -54,7 +54,7 @@
 	}
 }
 
-:root[substack-hide-you-may-know-feed="true"] {
+:root:not([sift-paused="true"])[substack-hide-you-may-know-feed="true"] {
 	[role="article"]:has([class*="peopleYouMayKnowContainer"]) {
 		display: none;
 	}

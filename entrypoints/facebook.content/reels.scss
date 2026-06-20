@@ -1,6 +1,6 @@
 // reels
-:root[page-path*="/reel/"],
-:root[page-path*="/reels/"] {
+:root:not([sift-paused="true"])[page-path*="/reel/"],
+:root:not([sift-paused="true"])[page-path*="/reels/"] {
   &[facebook-shortform="hide"],
   &[facebook-shortform="block"] {
     /* hide next button */

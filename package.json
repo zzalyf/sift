@@ -2,7 +2,7 @@
 	"name": "sift",
 	"description": "A browser extension for filtering feeds and distracting content on social media",
 	"private": true,
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"type": "module",
 	"scripts": {
 		"dev": "wxt",
