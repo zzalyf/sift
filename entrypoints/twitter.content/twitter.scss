@@ -1,3 +1,16 @@
+:root[twitter-hide-grok="true"] {
+	[href="/i/grok"] {
+		display: none;
+	}
+}
+
+:root[twitter-hide-creator-studio="true"] {
+	[href*="creator_studio"],
+	[href*="creatorstudio"] {
+		display: none;
+	}
+}
+
 //hides the "What's new" feed on the right sidebar
 :root[twitter-hide-whats-new-feed="true"] {
 	*:has([data-testid*="news_sidebar_article"]):not(:has(input)) {
@@ -127,6 +140,9 @@
 // hide for you feed
 :root[twitter-hide-for-you-feed="true"][page-path="/home/"] {
 	[data-testid="primaryColumn"] {
+		nav [role="presentation"]:first-child {
+			display: none;
+		}
 		&:has(nav [role="presentation"]:first-child [aria-selected="true"]) {
 			section {
 				opacity: 0;

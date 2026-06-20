@@ -11,16 +11,20 @@ export default defineConfig({
     developmentIndicator: "overlay",
   },
   manifest: {
-    name: "Feedless",
+    name: "Sift",
     browser_specific_settings: {
       gecko: {
-        id: "{53a6eedc-9cce-4134-b93c-5542108a18ce}",
+        id: "{70c8d535-6562-4b28-9ec1-b2f71ad857a4}",
+        strict_min_version: "109.0",
         data_collection_permissions: {
           required: ["none"],
         },
       },
+      gecko_android: {
+        strict_min_version: "113.0",
+      },
     },
-    permissions: ["storage"],
+    permissions: ["storage", "activeTab", "tabs"],
   },
   vite: () => {
     return {

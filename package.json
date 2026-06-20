@@ -1,8 +1,8 @@
 {
-	"name": "feedless",
-	"description": "A browser extension for removing the feeds on various platforms",
+	"name": "sift",
+	"description": "A browser extension for filtering feeds and distracting content on social media",
 	"private": true,
-	"version": "0.3.2",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
 		"dev": "wxt",

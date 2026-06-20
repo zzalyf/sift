@@ -1,83 +1,34 @@
-import ConfirmationDialog from "@/components/confiromationDialog";
-
 export default function ConfigPage() {
-  let resetPasswordDialog!: HTMLDialogElement;
-  let setPasswordDialog!: HTMLDialogElement;
+  const [query, setQuery] = createSignal("");
 
-  function handleSubmit(e?: Event) {
-    e?.preventDefault();
-    setPasswordDialog.showModal();
-  }
+  const filteredKeys = createMemo(() => {
+    const q = query().toLowerCase().trim();
+    return Object.keys(ConfigurationShape).filter(
+      (key) => q === "" || ConfigurationShape[key].HumanName.toLowerCase().includes(q)
+    );
+  });
 
   return (
-    <>
-      <main class="bg-background min-h-svh p-8 text-text">
-        <h1 class="flex flex-row gap-2 items-center text-5xl font-bold">
-          <img src={"/icon.svg"} class="w-20" aria-hidden="true" />
-          Feedless Options
-        </h1>
-        <p class="mt-4">
-          A quick explanation of shortform options, they can be set to block,
-          show, or hide. Block prevents you from seeing the shortform content at
-          all. Show does nothing to the shortform content. Hide hides the
-          shortform content from the UI but still allows you to watch shortform
-          videos if you have a link and disables scrolling.
-        </p>
-        <form class="mt-4 mb-4" onSubmit={handleSubmit}>
-          <div class="flex flex-col">
-            <label for="password-input">Password</label>
-            <div class="flex flex-row gap-4">
-              <input
-                id="password-input"
-                type="password"
-                class="flex-1 border rounded-md"
-                onKeyDown={(event) => event.key == "Enter" && handleSubmit()}
-              />
-              <button class="bg-primary text-primary-foreground p-4 pt-2 pb-2 rounded-xl">
-                Set or Update
-              </button>
-              <button
-                class="bg-primary text-primary-foreground p-4 pt-2 pb-2 rounded-xl"
-                type="button"
-                onClick={() => resetPasswordDialog.showModal()}
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        </form>
-        <div class="columns-[500px]">
-          <For each={Object.keys(ConfigurationShape)}>
-            {(key) => (
-              <ConfigSection key={key} config={ConfigurationShape[key]} />
-            )}
-          </For>
-        </div>
-        <footer class="border-t pt-4 mt-4">
-          <p>
-            v{import.meta.env.VITE_APP_VERSION} Thank You HeroRareheart for the
-            original logo design
-          </p>
-        </footer>
-
-        <ConfirmationDialog
-          ref={setPasswordDialog}
-          message="Are you sure you want to set or update your password?"
-          onConfirm={() => {
-            let password = (
-              document.getElementById("password-input") as HTMLInputElement
-            ).value;
-
-            storage.setItem("local:password", password);
-          }}
+    <main class="bg-background min-h-svh text-text">
+      <header class="sticky top-0 z-10 bg-background border-b border-surface px-6 py-4 flex items-center gap-3">
+        <img src="/icon.svg" class="w-8 h-8" aria-hidden="true" />
+        <span class="text-2xl font-bold text-primary flex-1">Sift</span>
+        <input
+          type="search"
+          placeholder="Search sites..."
+          value={query()}
+          onInput={(e) => setQuery(e.currentTarget.value)}
+          class="bg-surface text-text placeholder-secondary text-sm rounded-lg px-3 py-1.5 border border-secondary focus:border-primary focus:outline-none w-48"
         />
-
-        <ConfirmationDialog
-          ref={resetPasswordDialog}
-          message="Are you sure you want to remove your password?"
-          onConfirm={() => storage.removeItem("local:password")}
-        />
-      </main>
-    </>
+      </header>
+      <div class="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-4">
+        <For each={filteredKeys()}>
+          {(key) => <ConfigSection key={key} config={ConfigurationShape[key]} />}
+        </For>
+        <Show when={filteredKeys().length === 0}>
+          <p class="text-secondary text-sm text-center py-8">No sites found</p>
+        </Show>
+      </div>
+    </main>
   );
 }

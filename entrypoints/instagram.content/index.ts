@@ -1,6 +1,7 @@
 import "./instagram.scss";
 
 let shortform = "show";
+let hideForYou: string | null = null;
 
 export default defineContentScript({
   matches: ["*://*.instagram.com/*"],
@@ -22,8 +23,23 @@ function scrollBlockerActive(event: Event) {
 
 function onUpdate(key: string, value: string) {
   if (key === "local:instagram-shortform") shortform = value;
+  if (key === "local:instagram-hide-for-you-feed") {
+    hideForYou = value;
+    redirectToFollowing();
+  }
+}
+
+function redirectToFollowing() {
+  if (
+    hideForYou === "true" &&
+    location.pathname === "/" &&
+    !location.search.includes("variant=following")
+  ) {
+    location.replace("/?variant=following");
+  }
 }
 
 function unfeeder() {
   AddPath();
+  redirectToFollowing();
 }

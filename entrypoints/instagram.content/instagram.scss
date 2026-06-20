@@ -3,20 +3,37 @@ section:has(> main) {
   justify-content: end;
 }
 
-:root[page-path="/"][instagram-hide-feed="true"] main {
-  display: none;
+:root[page-path="/"][instagram-hide-feed="true"] {
+  main:has([role="tablist"] > :last-child [role="tab"][aria-selected="true"]) article {
+    display: none;
+  }
 }
 
-/* explore page feed*/
-:root[page-path="/explore/"][instagram-hide-explore-feed="true"] main {
-  display: none;
+:root[instagram-hide-for-you-feed="true"] {
+  [role="tablist"] > :first-child {
+    display: none;
+  }
+}
+
+:root[page-path="/"][instagram-hide-for-you-feed="true"] {
+  main:has([role="tablist"] > :first-child [role="tab"][aria-selected="true"]) article {
+    display: none;
+  }
+}
+
+/* explore page feed - hide grid, keep search UI */
+:root[page-path="/explore/"][instagram-hide-explore-feed="true"] {
+  /* hide top-level main children that don't contain the search input */
+  [role="main"] > *:not(:has(input)) { display: none; }
+  /* inside the search-containing subtree, hide siblings of the search at each level */
+  [role="main"] > *:has(input) > *:not(:has(input)):not(input) { display: none; }
+  [role="main"] > *:has(input) > *:has(input) > *:not(:has(input)):not(input) { display: none; }
 }
 
 /* explore sidebar button */
-:root[instagram-hide-explore-feed="true"]
+:root[instagram-hide-explore-button="true"]
   div:has(> span):has(a[href*="explore"]) {
   display: none;
-  outline: 1px solid red;
 }
 
 :root[instagram-shortform="hidden"],
@@ -30,8 +47,8 @@ section:has(> main) {
   }
 }
 
-// hide reels when they are blocked
-:root[instagram-shortform="block"] {
+// hide reels when they are blocked (only on reel pages)
+:root[instagram-shortform="block"][page-path*="/reel"] {
   main {
     display: none;
   }

@@ -1,19 +1,39 @@
 import "@/assets/tailwind.css";
+import { ConfigSection } from "@/components/optionSection";
 import DevPopup from "./devPopup";
-//
+
 function App() {
   const optionsUrl = browser.runtime.getURL("/options.html");
-
+  const [currentConfig, setCurrentConfig] = createSignal<PlatformConfiguration | null>(null);
+  const [configKey, setConfigKey] = createSignal<string>("");
   const [showDev, setShowDev] = createSignal(
     import.meta.env.DEV && import.meta.env.WXT_SHOW_DEV_POPUP == "true"
   );
+
+  const hostnameAliases: Record<string, string> = {
+    "x.com": "www.twitter.com",
+    "www.x.com": "www.twitter.com",
+    "twitter.com": "www.twitter.com",
+  };
+
+  onMount(async () => {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    const url = tabs[0]?.url;
+    if (!url) return;
+    try {
+      const hostname = new URL(url).hostname;
+      const key = hostnameAliases[hostname] ?? hostname;
+      const config = ConfigurationShape[key];
+      if (config) {
+        setCurrentConfig(config);
+        setConfigKey(key);
+      }
+    } catch {}
+  });
+
   return (
     <>
-      <Show
-        when={
-          import.meta.env.DEV && import.meta.env.WXT_SHOW_DEV_POPUP == "true"
-        }
-      >
+      <Show when={import.meta.env.DEV && import.meta.env.WXT_SHOW_DEV_POPUP == "true"}>
         <button
           onclick={() => setShowDev((p) => !p)}
           class="text-center w-full cursor-pointer text-primary p-2"
@@ -25,58 +45,37 @@ function App() {
         <DevPopup />
       </Show>
       <Show when={!showDev()}>
-        <div class="flex flex-col p-10 gap-5 min-w-80 text-center">
-          <h1 class="text-4xl ">Feedless</h1>
-          <p>Peace in the Digital Age</p>
-          <div class="flex flex-row justify-between">
+        <div class="flex flex-col min-w-80 max-h-[600px]">
+          <div class="flex justify-between items-center px-4 pt-4 pb-2">
+            <h1 class="flex items-center gap-2 text-xl font-bold text-primary">
+              <img src={browser.runtime.getURL("/icon.svg")} class="w-6 h-6" aria-hidden="true" />
+              Sift
+            </h1>
             <a
               href={optionsUrl}
               target="_blank"
-              class="flex flex-row gap-2 text-primary"
+              class="flex flex-row gap-1 items-center text-sm text-accent hover:text-primary transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-settings-icon lucide-settings"
-                aria-hidden="true"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
               Settings
             </a>
-            <a
-              href="https://github.com/ZMensRain/Feedless"
-              target="_blank"
-              class="flex flex-row gap-2 text-primary"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-github-icon lucide-github"
-                aria-hidden="true"
-              >
-                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                <path d="M9 18c-4.51 2-5-2-7-2" />
-              </svg>
-              Source
-            </a>
           </div>
-          <p class="text-primary">v{import.meta.env.VITE_APP_VERSION}</p>
+
+          <Show
+            when={currentConfig()}
+            fallback={
+              <div class="flex flex-col items-center justify-center gap-2 p-8 text-secondary text-sm">
+                <p>No settings for this site</p>
+              </div>
+            }
+          >
+            <div class="overflow-y-auto">
+              <ConfigSection key={configKey()} config={currentConfig()!} />
+            </div>
+          </Show>
         </div>
       </Show>
     </>

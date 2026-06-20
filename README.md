@@ -1,47 +1,55 @@
-# Manifest/Scope
+# Sift
 
-> [!NOTE]
-> Unless stated otherwise the default option for a configuration should be the one which restricts the platform the most.
+A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain/Feedless)) that lets you hide algorithmic feeds and distracting content on social media, while keeping the features you actually use.
 
-## Shortform Content
+## Features
 
-Every platform that is supported that has shortform content should have a config called **{platform}-shortform** and it should be one of the following values:
+- Hide "For You" / algorithmic feeds independently from "Following" feeds on Twitter/X and Instagram
+- Hide explore/discovery feeds while keeping search functional
+- Hide shortform content (Reels, Shorts, TikToks)
+- Hide sidebar clutter (Grok, trending, who to follow, etc.)
+- Site-aware popup: click the extension on a supported site to see only that site's settings
+- Firefox Android support
 
-- **"block"** does not allow a person to watch the shortform content and it hides shortform content from th UI.
-- **"show"** doesn't do anything to the shortform content
-- **"hide"** allows a person to watch shortform content when shared with them but does not allow them to scroll and it hides shortform content from th UI
+## Supported Platforms
 
-## Non-shortform Content
+- YouTube & YouTube Music
+- Twitter/X
+- Instagram
+- TikTok
+- Reddit
+- LinkedIn
+- Facebook
+- Bluesky
+- Pinterest
+- Substack
 
-every platform with a feed should have a single config called **{platform}-hide-feed** either **"true"** or **"false"** that controls whether the feed is hidden on all pages, for platforms like facebook with multiple types of feeds there should be a **{platform}-hide-{feedtype}-feed** also either **"true"** or **"false"**
+## Config keys
 
-If the home feed is removed and it is reasonably possible the search bar and logo or a label should be centred where the feed once was.
+### Shortform content
 
-In cases such as Pinterest where the search results are a feed themselves a special feed type should be created called **{platform}-hide-search-feed** either **"true"** or **"false"** defaults to **"false"**
+**`{platform}-shortform`** — one of:
 
-## What will not be done
+- **`block`** — blocks shortform pages and hides shortform from the UI
+- **`hide`** — hides shortform from the UI but allows watching when shared directly
+- **`show`** — no change
 
-- removing sign in popups/UI except when it is trivial to do so and it does not remove the only way to sign in/signup, when choosing which sign in/signup UI to keep favour the ones in the top right. Instagram for example once the popup appears it is not trivial to remove it and keep a functioning application.
+### Feeds
 
-## Targets
+**`{platform}-hide-feed`** — `"true"` / `"false"` — hides the main (Following/chronological) feed
 
-- [x] YouTube
-- [x] LinkedIn
-- [x] Reddit
-- [x] TikTok
-- [x] Pinterest
-- [x] SubStack
-- [x] Twitter/X
-- [x] Facebook
-- [x] BlueSky
-- [x] Instagram
-- [ ] Amazon
-- [x] YouTube music
-- [ ] Spotify
+**`{platform}-hide-for-you-feed`** — `"true"` / `"false"` — hides the algorithmic For You feed (Twitter/X and Instagram)
 
-# Building
+**`{platform}-hide-{feedtype}-feed`** — `"true"` / `"false"` — hides a specific feed type (explore, trending, etc.)
+
+> Default for all options is the most restrictive value.
+
+## Building
 
 ```sh
 pnpm i
-pnpm zip:firefox
+pnpm build:firefox   # development build → .output/firefox-mv2/
+pnpm zip:firefox     # production zip
 ```
+
+Load the extension in Firefox via `about:debugging` → Load Temporary Add-on → select any file inside `.output/firefox-mv2/`. Click **Reload** there after each build.

@@ -47,7 +47,7 @@ function unfeeder() {
 
   if (shortform !== "show" && document.URL.includes("results")) {
     document.querySelectorAll("yt-chip-cloud-chip-renderer").forEach((e) => {
-      if (e.innerHTML.includes("Shorts")) {
+      if (e.textContent?.includes("Shorts")) {
         e.remove();
       }
     });

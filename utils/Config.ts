@@ -81,7 +81,13 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		HumanName: "Facebook",
 	},
 	"www.instagram.com": {
-		Keys: [...feedKeys("instagram", ["explore", "more-from"]), ...shortFormKeys("instagram")],
+		Keys: [
+			booleanKey("local:instagram-hide-feed", "Hide Following Feed"),
+			booleanKey("local:instagram-hide-for-you-feed", "Hide For You Feed"),
+			...feedKeys("instagram", ["explore", "more-from"]).slice(1),
+			booleanKey("local:instagram-hide-explore-button", "Hide Explore Button"),
+			...shortFormKeys("instagram"),
+		],
 		HumanName: "Instagram",
 	},
 	"music.youtube.com": {
@@ -108,8 +114,11 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 	},
 	"www.twitter.com": {
 		Keys: [
-			...feedKeys("twitter", ["trending", "for-you", "who-to-follow", "whats-new", "explore"]),
+			booleanKey("local:twitter-hide-feed", "Hide Following Feed"),
+			...feedKeys("twitter", ["trending", "for-you", "who-to-follow", "whats-new", "explore"]).slice(1),
 			booleanKey("local:twitter-hide-premium", "Hide Premium"),
+			booleanKey("local:twitter-hide-grok", "Hide Grok"),
+			booleanKey("local:twitter-hide-creator-studio", "Hide Creator Studio"),
 		],
 		HumanName: "Twitter/X",
 	},
