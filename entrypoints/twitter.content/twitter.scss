@@ -129,7 +129,8 @@
 // hide following feed
 :root:not([sift-paused="true"])[twitter-hide-feed="true"][page-path="/home/"] {
 	[data-testid="primaryColumn"] {
-		&:has(nav [role="presentation"]:last-child [aria-selected="true"]) {
+		&:has(nav [role="presentation"]:last-child [aria-selected="true"]),
+		&:has([role="tablist"] > [role="presentation"]:last-child [aria-selected="true"]) {
 			section {
 				opacity: 0;
 				visibility: hidden;
@@ -140,10 +141,12 @@
 // hide for you feed
 :root:not([sift-paused="true"])[twitter-hide-for-you-feed="true"][page-path="/home/"] {
 	[data-testid="primaryColumn"] {
-		nav [role="presentation"]:first-child {
+		nav [role="presentation"]:first-child,
+		[role="tablist"] > [role="presentation"]:first-child {
 			display: none;
 		}
-		&:has(nav [role="presentation"]:first-child [aria-selected="true"]) {
+		&:has(nav [role="presentation"]:first-child [aria-selected="true"]),
+		&:has([role="tablist"] > [role="presentation"]:first-child [aria-selected="true"]) {
 			section {
 				opacity: 0;
 				visibility: hidden;
