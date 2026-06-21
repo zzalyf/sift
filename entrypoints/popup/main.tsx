@@ -17,6 +17,7 @@ function App() {
     "x.com": "www.twitter.com",
     "www.x.com": "www.twitter.com",
     "twitter.com": "www.twitter.com",
+    "m.twitch.tv": "www.twitch.tv",
   };
 
   onMount(async () => {

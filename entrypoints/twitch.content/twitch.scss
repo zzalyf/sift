@@ -1,7 +1,9 @@
-// Hide the "Live" tab in m.twitch.tv navigation
+// Hide the "Live" tab in m.twitch.tv navigation (href-based = language-agnostic)
 :root:not([sift-paused="true"])[twitch-hide-live-channels="true"] {
 	nav a[href="/live"],
-	[role="tablist"] a[href="/live"] {
+	[role="tablist"] a[href="/live"],
+	[role="tablist"] a[href*="/live"],
+	[role="tablist"] a[href*="live="] {
 		display: none;
 	}
 
@@ -55,8 +57,11 @@
 	}
 }
 
-// "Open App" button (header) and bottom sheet prompt (mobile)
+// "Open App" button and bottom sheet prompt (mobile)
+// DOM-confirmed: all mweb upsell links use tt_medium=mweb in href (header button + bottom sheet)
 :root:not([sift-paused="true"])[twitch-hide-open-app="true"] {
+	a[href*="tt_medium=mweb"],
+	.ReactModal__Overlay:has(a[href*="tt_medium=mweb"]),
 	[data-a-target="open-app-link"],
 	[data-a-target="app-download-drawer"],
 	[data-a-target="mobile-web-gate"],

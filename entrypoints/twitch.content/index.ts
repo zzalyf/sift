@@ -52,31 +52,35 @@ function hideElements() {
 				location.replace("/following");
 				return;
 			}
+			if (p === "/directory/following/live" || p === "/directory/following/live/") {
+				location.replace("/directory/following");
+				return;
+			}
 		}
-		// Hide "Live" tab in mobile navigation
-		document.querySelectorAll<HTMLElement>("nav a, [role='tablist'] a, [role='tablist'] [role='tab']").forEach(el => {
-			if (el.textContent?.trim().toLowerCase() === "live") el.style.display = "none";
+		// Hide "Em direto"/"Live" tab — match by pathname since href resolves to full URL
+		document.querySelectorAll<HTMLElement>("[role='tablist'] a").forEach(el => {
+			const a = el as HTMLAnchorElement;
+			if (a.pathname === "/" || a.pathname === "/live" || a.pathname === "/live/") {
+				a.setAttribute("data-sift-hide", "true");
+			}
 		});
 	}
 
 	markSidebarSections();
 
 	if (hideOpenApp !== "false") {
-		document.querySelectorAll<HTMLElement>("a, button").forEach(el => {
-			const text = el.textContent?.trim().toLowerCase() ?? "";
-			if (text === "open app" || text === "open in app") {
-				const sheet = el.closest<HTMLElement>("[role='dialog']") ?? el.closest<HTMLElement>("[data-a-target='app-download-drawer']");
-				(sheet ?? el as HTMLElement).style.display = "none";
+		// DOM-confirmed: mweb upsell modal is .ReactModal__Overlay containing a link with tt_medium=mweb
+		document.querySelectorAll<HTMLElement>(".ReactModal__Overlay, .ReactModal__Content").forEach(el => {
+			if (el.querySelector("a[href*='tt_medium=mweb'], a[href*='light_upsell'], a[href*='open_in_app']")) {
+				el.setAttribute("data-sift-hide", "true");
 			}
 		});
 	}
 
 	if (hideAdFree !== "false") {
-		document.querySelectorAll<HTMLElement>("a, button").forEach(el => {
-			const text = el.textContent?.trim().toLowerCase() ?? "";
-			if (text.includes("go ad-free") || text.includes("ad-free for free")) {
-				(el as HTMLElement).style.display = "none";
-			}
+		// data-a-target pattern for the ad-free upsell button
+		document.querySelectorAll<HTMLElement>("[data-a-target*='ad-free'], [data-test-selector*='ad-free']").forEach(el => {
+			el.style.display = "none";
 		});
 	}
 }
