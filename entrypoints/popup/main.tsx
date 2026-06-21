@@ -2,6 +2,7 @@ import "@/assets/tailwind.css";
 import { ConfigSection } from "@/components/optionSection";
 import { ConfigurationShape } from "@/utils/Config";
 import { Toast, showToast } from "@/components/Toast";
+import MotivationalQuote from "@/components/MotivationalQuote";
 import DevPopup from "./devPopup";
 
 function App() {
@@ -32,7 +33,8 @@ function App() {
         setCurrentConfig(config);
         setConfigKey(key);
         const val = await storage.getItem<string>(config.PauseKey);
-        setPaused(val === "true");
+        const isPaused = val === "true" || (!!val && val !== "false" && Date.now() < parseInt(val));
+        setPaused(isPaused);
       }
     } catch {}
   });
@@ -43,7 +45,13 @@ function App() {
     const newPaused = !paused();
     await storage.setItem(config.PauseKey, String(newPaused));
     setPaused(newPaused);
-    showToast(newPaused ? "Sift paused" : "Sift resumed");
+  }
+
+  async function pauseFor10m() {
+    const config = currentConfig();
+    if (!config) return;
+    await storage.setItem(config.PauseKey, String(Date.now() + 10 * 60 * 1000));
+    setPaused(true);
   }
 
   return (
@@ -68,14 +76,35 @@ function App() {
             </h1>
             <div class="flex items-center gap-2">
               <Show when={currentConfig()}>
-                <button
-                  onClick={togglePause}
-                  class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors"
-                  classList={{ "text-secondary": !paused(), "text-primary": paused() }}
-                  title={paused() ? "Resume Sift" : "Pause Sift"}
+                <Show
+                  when={paused()}
+                  fallback={
+                    <div class="flex items-center">
+                      <button
+                        onClick={togglePause}
+                        class="text-sm px-2 py-1 rounded-l-lg border border-secondary hover:border-primary transition-colors text-secondary"
+                        title="Pause Sift"
+                      >
+                        ⏸ Pause
+                      </button>
+                      <button
+                        onClick={pauseFor10m}
+                        class="text-sm px-2 py-1 rounded-r-lg border-t border-b border-r border-secondary hover:border-primary transition-colors text-secondary"
+                        title="Pause for 10 minutes"
+                      >
+                        10m
+                      </button>
+                    </div>
+                  }
                 >
-                  {paused() ? "▶ Resume" : "⏸ Pause"}
-                </button>
+                  <button
+                    onClick={togglePause}
+                    class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors text-primary"
+                    title="Resume Sift"
+                  >
+                    ▶ Resume
+                  </button>
+                </Show>
               </Show>
               <a
                 href={optionsUrl}
@@ -103,6 +132,7 @@ function App() {
               <ConfigSection key={configKey()} config={currentConfig()!} />
             </div>
           </Show>
+          <MotivationalQuote class="text-center px-4 pb-3" />
         </div>
         <Toast />
       </Show>

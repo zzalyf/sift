@@ -13,7 +13,12 @@ export default function QuickSettingsDropdown(props: props) {
   ];
 
   return (
-    <Show when={options().length > 1}>
+    <Show
+      when={options().length > 1}
+      fallback={
+        <span class="text-xs text-secondary px-1.5 py-1">{props.currentSetting}</span>
+      }
+    >
       <select
         onChange={(e) => props.onChange(e.target.value)}
         class="p-1.5 rounded-md cursor-pointer"

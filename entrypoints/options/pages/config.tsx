@@ -1,6 +1,7 @@
 import { ConfigSection } from "@/components/optionSection";
 import { ConfigurationShape } from "@/utils/Config";
 import { showToast } from "@/components/Toast";
+import MotivationalQuote from "@/components/MotivationalQuote";
 
 export default function ConfigPage() {
   const [query, setQuery] = createSignal("");
@@ -48,7 +49,8 @@ export default function ConfigPage() {
     <main class="bg-background min-h-svh text-text">
       <header class="sticky top-0 z-10 bg-background border-b border-surface px-6 py-4 flex items-center gap-3">
         <img src="/icon.svg" class="w-8 h-8" aria-hidden="true" />
-        <span class="text-2xl font-bold text-primary flex-1">Sift</span>
+        <span class="text-2xl font-bold text-primary">Sift</span>
+        <MotivationalQuote class="flex-1 text-center px-4" />
         <button
           onClick={exportSettings}
           class="text-sm text-accent hover:text-primary transition-colors px-2 py-1"

@@ -29,12 +29,30 @@ function fromStorage(config: PlatformConfiguration, onUpdate?: (key: string, val
 
 async function initPause(config: PlatformConfiguration) {
 	const val = await storage.getItem<string>(config.PauseKey);
-	setPaused((val ?? "false") === "true");
-	return storage.watch<string>(config.PauseKey, (v) => setPaused((v ?? "false") === "true"));
+	applyPauseValue(config.PauseKey, val);
+	return storage.watch<string>(config.PauseKey, (v) => applyPauseValue(config.PauseKey, v));
+}
+
+function applyPauseValue(key: StorageItemKey, val: string | null) {
+	if (!val || val === "false") { setPaused(false); return; }
+	if (val === "true") { setPaused(true); return; }
+	const until = parseInt(val);
+	const remaining = isNaN(until) ? 0 : until - Date.now();
+	if (remaining <= 0) {
+		storage.setItem(key, "false");
+		setPaused(false);
+	} else {
+		setPaused(true);
+		setTimeout(() => { storage.setItem(key, "false"); setPaused(false); }, remaining);
+	}
 }
 
 function setPaused(paused: boolean) {
-	document.documentElement.toggleAttribute("sift-paused", paused);
+	if (paused) {
+		document.documentElement.setAttribute("sift-paused", "true");
+	} else {
+		document.documentElement.removeAttribute("sift-paused");
+	}
 }
 
 function fromDefaults(config: PlatformConfiguration, onUpdate?: (key: string, value: string) => void) {
