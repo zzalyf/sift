@@ -22,8 +22,8 @@ function scrollBlockerActive(event: Event) {
 }
 
 function onUpdate(key: string, value: string) {
-  if (key === "local:instagram-shortform") shortform = value;
-  if (key === "local:instagram-hide-for-you-feed") {
+  if (key === "sync:instagram-shortform") shortform = value;
+  if (key === "sync:instagram-hide-for-you-feed") {
     hideForYou = value;
     redirectToFollowing();
   }

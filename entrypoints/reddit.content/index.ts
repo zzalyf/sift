@@ -15,9 +15,9 @@ export default defineContentScript({
 });
 
 function update(key: string, value: string) {
-	if (key === "local:reddit-hide-popular-communities-feed") hidePopularCommunities = value;
-	else if (key === "local:reddit-hide-explore-feed") hideExploreFeed = value;
-	else if (key === "local:reddit-hide-news-feed") hideNewsFeed = value;
+	if (key === "sync:reddit-hide-popular-communities-feed") hidePopularCommunities = value;
+	else if (key === "sync:reddit-hide-explore-feed") hideExploreFeed = value;
+	else if (key === "sync:reddit-hide-news-feed") hideNewsFeed = value;
 	hideElements();
 }
 

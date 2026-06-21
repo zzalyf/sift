@@ -66,6 +66,79 @@ export type PlatformConfiguration = {
 	PauseKey: StorageItemKey;
 };
 
+// -------------------------------------------------------------------------------------
+// Utils (must be declared before ConfigurationShape to avoid TDZ in bundled background)
+// -------------------------------------------------------------------------------------
+
+const feedDescriptions: Record<string, string> = {
+	"up-next": "Hides recommended videos in the sidebar",
+	"subscription": "Hides the subscriptions feed and sidebar section",
+	"explore": "Hides explore and discovery content",
+	"more-from": "Hides related content suggestions",
+	"trending": "Hides trending topics",
+	"for-you": "Hides the algorithmic For You feed",
+	"who-to-follow": "Hides user follow suggestions",
+	"whats-new": "Hides the What's New panel",
+	"live": "Hides live content",
+	"following": "Hides the Following feed",
+	"search": "Hides content on the Search page",
+	"games": "Hides gaming sections",
+	"marketplace": "Hides the Marketplace feed",
+	"videos": "Hides the Videos/Watch section",
+	"popular-communities": "Hides popular community suggestions",
+	"news": "Hides the News page feed",
+	"related-posts": "Hides related posts in the sidebar",
+	"new-bestsellers": "Hides the New Bestsellers section",
+	"you-may-know": "Hides 'People you may know' suggestions",
+	"related-pins": "Hides related pins on pin pages",
+	"board": "Hides board idea suggestions",
+};
+
+function shortFormKeys(platform: string, description?: string): ConfigurationKey[] {
+	return [
+		{
+			HumanName: "Shortform",
+			Key: `sync:${platform}-shortform`,
+			Values: ["block", "show", "hide"],
+			Max: "block",
+			description: description ?? "block: prevent access · hide: remove from UI · show: no change",
+		},
+	];
+}
+
+function booleanKey(Key: StorageItemKey, HumanName: string, Default: boolean = true, description?: string): ConfigurationKey {
+	return {
+		HumanName,
+		Key,
+		Max: "true",
+		Values: Default ? ["true", "false"] : ["false", "true"],
+		description,
+	};
+}
+
+function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
+	if (feeds === undefined) feeds = [];
+
+	return [
+		{
+			HumanName: "Hide Home Feed",
+			Key: `sync:${platform}-hide-feed`,
+			Values: ["true", "false"],
+			Max: "true",
+			description: "Hides the main home/timeline feed",
+		},
+		...feeds.map(
+			(feed): ConfigurationKey => ({
+				HumanName: `Hide ${feed.replaceAll("-", " ")} Feed`,
+				Key: `sync:${platform}-hide-${feed}-feed`,
+				Values: ["true", "false"],
+				Max: "true",
+				description: feedDescriptions[feed] ?? `Hides the ${feed.replaceAll("-", " ")} feed`,
+			})
+		),
+	];
+}
+
 export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 	"www.youtube.com": {
 		HumanName: "YouTube",
@@ -151,77 +224,15 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 			booleanKey("sync:twitter-hide-creator-studio", "Hide Creator Studio", true, "Hides Creator Studio links in the sidebar"),
 		],
 	},
+	"www.twitch.tv": {
+		HumanName: "Twitch",
+		PauseKey: "sync:twitch-paused",
+		Keys: [
+			booleanKey("sync:twitch-hide-live-channels", "Hide Live Channels", true, "Hides the Live Channels discovery section; redirects home to Following on desktop and mobile"),
+			booleanKey("sync:twitch-hide-viewers-also-watch", "Hide Viewers Also Watch", true, "Hides channel recommendations on stream pages"),
+			booleanKey("sync:twitch-hide-open-app", "Hide Open App Prompt", true, "Hides the Open App button and bottom sheet on mobile"),
+			booleanKey("sync:twitch-hide-ad-free", "Hide Go Ad-Free Button", true, "Hides the 'Go Ad-Free for Free' upsell button in the header"),
+		],
+	},
 };
 
-// -------------------------------------------------------------------------------------
-// Utils
-// -------------------------------------------------------------------------------------
-
-const feedDescriptions: Record<string, string> = {
-	"up-next": "Hides recommended videos in the sidebar",
-	"subscription": "Hides the subscriptions feed and sidebar section",
-	"explore": "Hides explore and discovery content",
-	"more-from": "Hides related content suggestions",
-	"trending": "Hides trending topics",
-	"for-you": "Hides the algorithmic For You feed",
-	"who-to-follow": "Hides user follow suggestions",
-	"whats-new": "Hides the What's New panel",
-	"live": "Hides live content",
-	"following": "Hides the Following feed",
-	"search": "Hides content on the Search page",
-	"games": "Hides gaming sections",
-	"marketplace": "Hides the Marketplace feed",
-	"videos": "Hides the Videos/Watch section",
-	"popular-communities": "Hides popular community suggestions",
-	"news": "Hides the News page feed",
-	"related-posts": "Hides related posts in the sidebar",
-	"new-bestsellers": "Hides the New Bestsellers section",
-	"you-may-know": "Hides 'People you may know' suggestions",
-	"related-pins": "Hides related pins on pin pages",
-	"board": "Hides board idea suggestions",
-};
-
-function shortFormKeys(platform: string, description?: string): ConfigurationKey[] {
-	return [
-		{
-			HumanName: "Shortform",
-			Key: `sync:${platform}-shortform`,
-			Values: ["block", "show", "hide"],
-			Max: "block",
-			description: description ?? "block: prevent access · hide: remove from UI · show: no change",
-		},
-	];
-}
-
-function booleanKey(Key: StorageItemKey, HumanName: string, Default: boolean = true, description?: string): ConfigurationKey {
-	return {
-		HumanName,
-		Key,
-		Max: "true",
-		Values: Default ? ["true", "false"] : ["false", "true"],
-		description,
-	};
-}
-
-function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
-	if (feeds === undefined) feeds = [];
-
-	return [
-		{
-			HumanName: "Hide Home Feed",
-			Key: `sync:${platform}-hide-feed`,
-			Values: ["true", "false"],
-			Max: "true",
-			description: "Hides the main home/timeline feed",
-		},
-		...feeds.map(
-			(feed): ConfigurationKey => ({
-				HumanName: `Hide ${feed.replaceAll("-", " ")} Feed`,
-				Key: `sync:${platform}-hide-${feed}-feed`,
-				Values: ["true", "false"],
-				Max: "true",
-				description: feedDescriptions[feed] ?? `Hides the ${feed.replaceAll("-", " ")} feed`,
-			})
-		),
-	];
-}

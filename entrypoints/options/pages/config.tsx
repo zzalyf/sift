@@ -84,7 +84,7 @@ export default function ConfigPage() {
       </header>
       <div class="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-4">
         <For each={filteredKeys()}>
-          {(key) => <ConfigSection key={key} config={ConfigurationShape[key]} />}
+          {(key) => <ConfigSection key={key} config={ConfigurationShape[key]} collapsible />}
         </For>
         <Show when={filteredKeys().length === 0}>
           <p class="text-secondary text-sm text-center py-8">No sites found</p>

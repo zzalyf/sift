@@ -1,0 +1,66 @@
+// Hide the "Live" tab in m.twitch.tv navigation
+:root:not([sift-paused="true"])[twitch-hide-live-channels="true"] {
+	nav a[href="/live"],
+	[role="tablist"] a[href="/live"] {
+		display: none;
+	}
+
+	// Hide all content when on the /live path
+	&[page-path="/live/"] {
+		main > *,
+		[data-a-target="browse-main"] > * {
+			display: none;
+		}
+	}
+
+	// Desktop: hide browse/recommendation shelves — but not on the Following page
+	&:not([page-path*="/directory/following"]) {
+		[data-a-target="front-page-carousel"],
+		[data-target="directory-first-item"] {
+			display: none;
+		}
+	}
+
+	// "Open stories" uses div[class*="storiesLeftNavSection"]
+	[class*="storiesLeftNavSection"] {
+		display: none !important;
+	}
+}
+
+// Left sidebar: "Live Channels" + "Recommended Categories" + "Viewers Also Watch"
+// JS marks these sections with data-sift-hide="true" by heading text,
+// because CSS alone can't distinguish them from "Followed Channels" on channel pages.
+[data-sift-hide="true"] {
+	display: none !important;
+}
+
+// Stable data-a-target selectors for sidebar sections (browse page)
+:root:not([sift-paused="true"])[twitch-hide-live-channels="true"] {
+	[data-a-target="side-nav-header-live-channels"],
+	[data-a-target="side-nav-live-recommended-section"],
+	[data-a-target="side-nav-header-recommended-categories"],
+	[data-a-target="side-nav-recommended-categories"] {
+		display: none;
+	}
+}
+
+// "Viewers Also Watch" panel selectors (stable data-a-target)
+:root:not([sift-paused="true"])[twitch-hide-viewers-also-watch="true"] {
+	[data-a-target="viewers-also-watching"],
+	[data-a-target="host-list"],
+	[data-a-target="host-list-carousel"],
+	[data-a-target="channel-recommendation"],
+	[data-a-target="side-nav-directory-game"] {
+		display: none;
+	}
+}
+
+// "Open App" button (header) and bottom sheet prompt (mobile)
+:root:not([sift-paused="true"])[twitch-hide-open-app="true"] {
+	[data-a-target="open-app-link"],
+	[data-a-target="app-download-drawer"],
+	[data-a-target="mobile-web-gate"],
+	[data-test-selector="open-app-banner"] {
+		display: none !important;
+	}
+}

@@ -24,8 +24,8 @@ function scrollBlockerActive(event: Event) {
 }
 
 function onUpdate(key: string, value: string) {
-  if (key === "local:youtube-shortform") shortform = value;
-  if (key === "local:youtube-hide-up-next-feed") hideNextFeed = value;
+  if (key === "sync:youtube-shortform") shortform = value;
+  if (key === "sync:youtube-hide-up-next-feed") hideNextFeed = value;
 }
 
 function unfeeder() {

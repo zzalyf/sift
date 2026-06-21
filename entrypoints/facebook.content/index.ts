@@ -18,7 +18,7 @@ export default defineContentScript({
 });
 
 function onUpdate(key: string, value: string) {
-  if (key === "local:facebook-shortform") shortform = value;
+  if (key === "sync:facebook-shortform") shortform = value;
 }
 
 function unfeeder() {

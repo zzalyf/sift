@@ -128,6 +128,7 @@
 
 // hide following feed
 :root:not([sift-paused="true"])[twitter-hide-feed="true"][page-path="/home/"] {
+	// desktop: tab in presentation wrapper
 	[data-testid="primaryColumn"] {
 		&:has(nav [role="presentation"]:last-child [aria-selected="true"]),
 		&:has([role="tablist"] > [role="presentation"]:last-child [aria-selected="true"]) {
@@ -137,20 +138,35 @@
 			}
 		}
 	}
+	// mobile + fallback: Following tab has ?variant=following href
+	&:has([role="tab"][href*="variant=following"][aria-selected="true"]),
+	&:has([role="tablist"] [href*="variant=following"][aria-selected="true"]) {
+		section {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
 }
 // hide for you feed
 :root:not([sift-paused="true"])[twitter-hide-for-you-feed="true"][page-path="/home/"] {
-	[data-testid="primaryColumn"] {
-		nav [role="presentation"]:first-child,
-		[role="tablist"] > [role="presentation"]:first-child {
-			display: none;
-		}
-		&:has(nav [role="presentation"]:first-child [aria-selected="true"]),
-		&:has([role="tablist"] > [role="presentation"]:first-child [aria-selected="true"]) {
-			section {
-				opacity: 0;
-				visibility: hidden;
-			}
+	// desktop: tab wrapped in role="presentation" — hide the wrapper
+	[role="tablist"] [role="presentation"]:has([href="/home"]),
+	[role="tablist"] > [role="presentation"]:first-child {
+		display: none;
+	}
+	// mobile: direct tab link without presentation wrapper
+	[role="tablist"] > [href="/home"],
+	[role="tablist"] > a[href="/home"] {
+		display: none;
+	}
+	// hide feed content when For you tab is active (desktop + mobile)
+	&:has([role="tab"][href="/home"][aria-selected="true"]),
+	&:has([role="tablist"] [href="/home"][aria-selected="true"]),
+	&:has(nav [role="presentation"]:first-child [aria-selected="true"]),
+	&:has([role="tablist"] > [role="presentation"]:first-child [aria-selected="true"]) {
+		section {
+			opacity: 0;
+			visibility: hidden;
 		}
 	}
 }

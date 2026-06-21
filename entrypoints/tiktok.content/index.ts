@@ -34,7 +34,7 @@ function scrollBlockerActive(event: Event) {
 }
 
 function onUpdate(key: string, value: string) {
-  if (key === "local:tiktok-shortform") shortform = value;
+  if (key === "sync:tiktok-shortform") shortform = value;
 }
 
 function unfeeder() {

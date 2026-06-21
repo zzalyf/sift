@@ -6,10 +6,12 @@ import { showToast } from "./Toast";
 type Props = {
   key: string;
   config: PlatformConfiguration;
+  collapsible?: boolean;
 };
 
 export const ConfigSection = (props: Props) => {
   let confirmDialogRef!: HTMLDialogElement;
+  const [collapsed, setCollapsed] = createSignal(props.collapsible ?? false);
 
   const [values, resource] = createResource(async () => {
     return Promise.all(
@@ -78,8 +80,18 @@ export const ConfigSection = (props: Props) => {
       data-key={props.key}
       class="break-inside-avoid p-4 flex flex-col gap-2"
     >
-      <div class="flex justify-between">
-        <h2 class="text-3xl font-bold">{props.config.HumanName}</h2>
+      <div class="flex justify-between items-center">
+        <button
+          class="flex items-center gap-2 flex-1 text-left"
+          onClick={() => props.collapsible && setCollapsed((c) => !c)}
+          aria-expanded={!collapsed()}
+          disabled={!props.collapsible}
+        >
+          <Show when={props.collapsible}>
+            <span class="text-secondary text-xs w-3">{collapsed() ? "▶" : "▼"}</span>
+          </Show>
+          <h2 class="text-3xl font-bold">{props.config.HumanName}</h2>
+        </button>
         <QuickSettingsDropdown
           name={props.key}
           currentSetting={currentSetting()}
@@ -87,22 +99,24 @@ export const ConfigSection = (props: Props) => {
           onChange={onChange}
         />
       </div>
-      <For
-        each={(values() ?? []).toSorted((a, b) =>
-          a.config.HumanName.localeCompare(b.config.HumanName)
-        )}
-      >
-        {(option) => (
-          <ConfigOption
-            {...option}
-            onChange={(newValue) => {
-              storage.setItem(option.config.Key, newValue);
-              resource.refetch();
-              showToast(`${option.config.HumanName}: ${newValue}`);
-            }}
-          />
-        )}
-      </For>
+      <Show when={!props.collapsible || !collapsed()}>
+        <For
+          each={(values() ?? []).toSorted((a, b) =>
+            a.config.HumanName.localeCompare(b.config.HumanName)
+          )}
+        >
+          {(option) => (
+            <ConfigOption
+              {...option}
+              onChange={(newValue) => {
+                storage.setItem(option.config.Key, newValue);
+                resource.refetch();
+                showToast(`${option.config.HumanName}: ${newValue}`);
+              }}
+            />
+          )}
+        </For>
+      </Show>
       <ConfirmationDialog
         ref={(el) => (confirmDialogRef = el)}
         message={`Apply maximum restrictions for ${props.config.HumanName}?`}
