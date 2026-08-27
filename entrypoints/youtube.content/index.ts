@@ -99,9 +99,9 @@ function unfeeder() {
     menuButton &&
     menuButtonButton &&
     menuButtonButton.getAttribute("aria-pressed") == "true" &&
-    menuButton.getAttribute("feedless-pressed") != "true"
+    menuButton.getAttribute("sift-pressed") != "true"
   ) {
-    menuButton.setAttribute("feedless-pressed", "true");
+    menuButton.setAttribute("sift-pressed", "true");
     menuButton.click();
   }
 

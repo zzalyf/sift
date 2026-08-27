@@ -3,7 +3,7 @@ import { ConfigSection } from "@/components/optionSection";
 import { ConfigurationShape } from "@/utils/Config";
 import { Toast, showToast } from "@/components/Toast";
 import MotivationalQuote from "@/components/MotivationalQuote";
-import DevPopup from "./devPopup";
+const DevPopup = lazy(() => import("./devPopup"));
 import { ghostButton, ghostButtonActive, iconOnly, mutedText } from "@/components/ui";
 
 function App() {
@@ -83,7 +83,9 @@ function App() {
         </button>
       </Show>
       <Show when={showDev()}>
-        <DevPopup />
+        <Suspense>
+          <DevPopup />
+        </Suspense>
       </Show>
       <Show when={!showDev()}>
         <div class="flex flex-col min-w-80 max-h-[600px]">

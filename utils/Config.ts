@@ -221,7 +221,7 @@ export type PlatformConfiguration = {
 export const DisabledKey = (platform: string) => `sync:${platform}-disabled` as StorageItemKey;
 export const BlockedKey = (platform: string) => `sync:${platform}-blocked` as StorageItemKey;
 export const LimitKey = (platform: string) => `sync:${platform}-daily-limit` as StorageItemKey;
-export const DarkKey = (platform: string) => `sync:${platform}-force-dark` as StorageItemKey;
+const DarkKey = (platform: string) => `sync:${platform}-force-dark` as StorageItemKey;
 export const SnoozeKey = (platform: string) => `local:${platform}-snooze` as StorageItemKey;
 /** Usage is per device and per local day, so the key carries the date and never needs resetting. */
 export const UsageKey = (platform: string, day: string = Today()) =>
@@ -232,7 +232,7 @@ export function Today() {
 	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export const LimitValues = ["off", "5m", "15m", "30m", "1h", "2h"];
+const LimitValues = ["off", "5m", "15m", "30m", "1h", "2h"];
 
 export function LimitMinutes(value: string | null) {
 	switch (value) {
