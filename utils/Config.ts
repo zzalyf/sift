@@ -365,6 +365,7 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		booleanKey("sync:youtube-hide-playables", "Hide Playables", true, "Hides the Playables games shelf in the feed"),
 		booleanKey("sync:youtube-hide-topic-shelves", "Hide Topic Shelves", true, "Hides \"Explore more topics\" chip shelves in the feed"),
 		booleanKey("sync:youtube-hide-live", "Hide Live Streams", true, "Hides live streams in the home feed and in suggested videos"),
+		booleanKey("sync:youtube-hide-mixes", "Hide Mixes", true, "Hides auto-generated Mix and radio playlists in the feed"),
 	]),
 	"www.linkedin.com": platformConfig("linkedin", "LinkedIn", [
 		...feedKeys("linkedin"),

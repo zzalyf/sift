@@ -6,6 +6,7 @@ let hidePosts = "false";
 let hidePlayables = "true";
 let hideTopicShelves = "true";
 let hideLive = "true";
+let hideMixes = "true";
 
 export default defineContentScript({
   matches: ["*://www.youtube.com/*"],
@@ -35,6 +36,7 @@ function onUpdate(key: string, value: string) {
   if (key === "sync:youtube-hide-playables") hidePlayables = value;
   if (key === "sync:youtube-hide-topic-shelves") hideTopicShelves = value;
   if (key === "sync:youtube-hide-live") hideLive = value;
+  if (key === "sync:youtube-hide-mixes") hideMixes = value;
 }
 
 // A feed cell keeps its contents inside a shadow root, where :has() cannot reach, so hiding the
@@ -49,6 +51,9 @@ function feedClutterSelector() {
   if (hideTopicShelves === "true") targets.push("chips-shelf-with-video-shelf-renderer");
   // live is matched by structure, never by the badge text, which is translated
   if (hideLive === "true") targets.push(LIVE_MARKERS);
+  // A mix or radio playlist is always list=RD...; ordinary playlists are list=PL..., so this
+  // cannot catch them. The "Mix" badge is translated, the URL is not.
+  if (hideMixes === "true") targets.push('a[href*="list=RD"]');
   return targets.join(", ");
 }
 

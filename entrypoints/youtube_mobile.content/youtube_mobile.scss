@@ -173,3 +173,14 @@
     display: none;
   }
 }
+
+// Auto-generated Mix and radio playlists in the feed. Matched by the RD playlist id in the
+// link, which is the same in every language, rather than the translated "Mix" badge.
+:root:not([sift-paused="true"])[youtube-hide-mixes="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-mixes="true"][page-path="/feed/subscriptions/"] {
+  ytm-video-with-context-renderer:has(a[href*="list=RD"]),
+  ytm-rich-item-renderer:has(a[href*="list=RD"]),
+  ytm-media-item:has(a[href*="list=RD"]) {
+    display: none;
+  }
+}
