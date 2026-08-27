@@ -18,6 +18,11 @@ export default defineConfig({
         // 121 is where :has() shipped, which every stylesheet here depends on. Anything older
         // installs happily and then filters nothing.
         strict_min_version: "121.0",
+        // Required for new AMO submissions. Sift collects nothing: settings live in the
+        // browser's own storage and never leave the device beyond Firefox Sync.
+        data_collection_permissions: {
+          required: ["none"],
+        },
       },
       gecko_android: {
         strict_min_version: "121.0",
