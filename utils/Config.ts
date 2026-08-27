@@ -350,6 +350,7 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		booleanKey("sync:youtube-hide-end-screen", "Hide End Screen bits", true, "Hides end screen cards and video suggestions"),
 		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", false, "Removes video thumbnails, leaving titles and channel names"),
 		booleanKey("sync:youtube-hide-comments", "Hide Comments", false, "Hides the comment section under videos"),
+		booleanKey("sync:youtube-hide-community-posts", "Hide Community Posts", false, "Hides channel posts in the home and subscriptions feeds; channel Posts tabs are untouched"),
 	]),
 	"www.linkedin.com": platformConfig("linkedin", "LinkedIn", [
 		...feedKeys("linkedin"),

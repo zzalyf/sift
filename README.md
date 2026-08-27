@@ -20,7 +20,7 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 
 ## Supported Platforms
 
-- YouTube & YouTube Music (incl. hiding thumbnails and the comment section)
+- YouTube & YouTube Music (incl. hiding thumbnails, the comment section, and community posts in the feed)
 - Twitter/X
 - Instagram
 - TikTok

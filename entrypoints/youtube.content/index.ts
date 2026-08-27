@@ -2,6 +2,7 @@ import "./youtube.scss";
 
 let shortform = "show";
 let hideNextFeed = "true";
+let hidePosts = "false";
 
 export default defineContentScript({
   matches: ["*://www.youtube.com/*"],
@@ -27,12 +28,46 @@ function scrollBlockerActive(event: Event) {
 function onUpdate(key: string, value: string) {
   if (key === "sync:youtube-shortform") shortform = value;
   if (key === "sync:youtube-hide-up-next-feed") hideNextFeed = value;
+  if (key === "sync:youtube-hide-community-posts") hidePosts = value;
+}
+
+// A feed cell keeps its post inside a shadow root, where :has() cannot reach, so hiding the
+// post alone leaves the cell behind as a gap in the grid. Mark the cell from JS instead —
+// the same trick twitch.content uses for its sidebar sections.
+const POST_SELECTOR = "ytd-post-renderer, ytd-backstage-post-thread-renderer";
+
+function markCommunityPosts() {
+  const path = GetPath();
+  const onFeed = path === "/" || path === "/feed/subscriptions/";
+  const hiding = hidePosts === "true" && onFeed;
+
+  document
+    .querySelectorAll<HTMLElement>("ytd-rich-item-renderer, ytd-rich-section-renderer")
+    .forEach((cell) => {
+      const holdsPost =
+        hiding &&
+        !!(cell.querySelector(POST_SELECTOR) ?? cell.shadowRoot?.querySelector(POST_SELECTOR));
+      if (holdsPost) cell.setAttribute("data-sift-hide", "true");
+      else if (cell.hasAttribute("data-sift-hide")) cell.removeAttribute("data-sift-hide");
+    });
+}
+
+function clearPostMarks() {
+  if (!document.querySelector("[data-sift-hide]")) return;
+  document
+    .querySelectorAll("[data-sift-hide]")
+    .forEach((el) => el.removeAttribute("data-sift-hide"));
 }
 
 function unfeeder() {
   AddPath();
 
-  if (!IsActive()) return;
+  if (!IsActive()) {
+    clearPostMarks();
+    return;
+  }
+
+  markCommunityPosts();
 
   // close the sidebar
   const menuButton = document.getElementById("guide-button");

@@ -131,3 +131,18 @@
     display: none;
   }
 }
+
+// Hides channel (community) posts in the feed only; see the desktop stylesheet.
+:root:not([sift-paused="true"])[youtube-hide-community-posts="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-community-posts="true"][page-path="/feed/subscriptions/"] {
+  ytm-backstage-post-thread-renderer,
+  ytm-backstage-post-renderer,
+  ytm-post-renderer {
+    display: none;
+  }
+
+  ytm-rich-item-renderer:has(ytm-backstage-post-thread-renderer, ytm-post-renderer),
+  ytm-rich-section-renderer:has(ytm-backstage-post-thread-renderer, ytm-post-renderer) {
+    display: none;
+  }
+}

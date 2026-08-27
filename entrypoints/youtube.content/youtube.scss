@@ -205,3 +205,19 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 		display: none;
 	}
 }
+
+// Hides channel (community) posts in the feed only. A channel's own Posts tab is left alone:
+// going there is a deliberate choice, so it is not a distraction to remove.
+:root:not([sift-paused="true"])[youtube-hide-community-posts="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-community-posts="true"][page-path="/feed/subscriptions/"] {
+	ytd-post-renderer,
+	ytd-backstage-post-thread-renderer {
+		display: none;
+	}
+
+	// The cell around a post is marked by markCommunityPosts() in index.ts: the post lives in
+	// the cell's shadow root, so :has() cannot see it from here.
+	[data-sift-hide="true"] {
+		display: none !important;
+	}
+}
