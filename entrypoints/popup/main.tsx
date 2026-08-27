@@ -4,6 +4,7 @@ import { ConfigurationShape } from "@/utils/Config";
 import { Toast, showToast } from "@/components/Toast";
 import MotivationalQuote from "@/components/MotivationalQuote";
 import DevPopup from "./devPopup";
+import { ghostButton, ghostButtonActive, mutedText } from "@/components/ui";
 
 function App() {
   const optionsUrl = browser.runtime.getURL("/options.html");
@@ -94,11 +95,7 @@ function App() {
               <Show when={currentConfig()}>
                 <button
                   onClick={toggleDisabled}
-                  class="text-sm px-2 py-1 rounded-lg border transition-colors"
-                  classList={{
-                    "border-primary text-primary": disabled(),
-                    "border-secondary text-secondary hover:border-primary": !disabled(),
-                  }}
+                  class={disabled() ? ghostButtonActive : ghostButton}
                   title={disabled() ? "Turn Sift back on for this site" : "Turn Sift off on this site"}
                   aria-pressed={disabled()}
                 >
@@ -114,14 +111,14 @@ function App() {
                       <div class="flex items-center">
                         <button
                           onClick={togglePause}
-                          class="text-sm px-2 py-1 rounded-l-lg border border-secondary hover:border-primary transition-colors text-secondary"
+                          class={`${ghostButton} rounded-r-none`}
                           title="Pause Sift"
                         >
                           ⏸
                         </button>
                         <button
                           onClick={pauseFor10m}
-                          class="text-sm px-2 py-1 rounded-r-lg border-t border-b border-r border-secondary hover:border-primary transition-colors text-secondary"
+                          class={`${ghostButton} rounded-l-none border-l-0`}
                           title="Pause for 10 minutes"
                         >
                           10m
@@ -129,11 +126,7 @@ function App() {
                       </div>
                     }
                   >
-                    <button
-                      onClick={togglePause}
-                      class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors text-primary"
-                      title="Resume Sift"
-                    >
+                    <button onClick={togglePause} class={ghostButtonActive} title="Resume Sift">
                       ▶ Resume
                     </button>
                   </Show>
@@ -142,7 +135,8 @@ function App() {
               <a
                 href={optionsUrl}
                 target="_blank"
-                class="flex flex-row gap-1 items-center text-sm text-accent hover:text-primary transition-colors"
+                class={`${ghostButton} flex flex-row gap-1.5 items-center`}
+                title="Open settings"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
@@ -154,7 +148,7 @@ function App() {
           </div>
 
           <Show when={disabled() && currentConfig()}>
-            <p class="text-xs text-secondary px-4 pb-2">
+            <p class={`${mutedText} px-4 pb-2`}>
               Sift is off on {currentConfig()!.HumanName}. Your settings are kept.
             </p>
           </Show>

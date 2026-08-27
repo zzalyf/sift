@@ -105,7 +105,6 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		outline: 1px solid red;
 		justify-content: center;
 		pointer-events: none;
 	}
@@ -215,9 +214,28 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 		display: none;
 	}
 
-	// The cell around a post is marked by markCommunityPosts() in index.ts: the post lives in
-	// the cell's shadow root, so :has() cannot see it from here.
-	[data-sift-hide="true"] {
-		display: none !important;
+}
+
+// hides the "Explore more topics" chip shelf in the feed
+:root:not([sift-paused="true"])[youtube-hide-topic-shelves="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-topic-shelves="true"][page-path="/feed/subscriptions/"] {
+	chips-shelf-with-video-shelf-renderer {
+		display: none;
 	}
+}
+
+// hides the Playables games shelf in the feed. Scoped to the feed so /playables, which you have
+// to go to on purpose, still works.
+:root:not([sift-paused="true"])[youtube-hide-playables="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-playables="true"][page-path="/feed/subscriptions/"] {
+	ytd-mini-game-card-view-model,
+	mini-game-card-view-model {
+		display: none;
+	}
+}
+
+// Feed cells marked by markFeedClutter() in index.ts, whose contents live in a shadow root
+// that :has() cannot see into.
+:root:not([sift-paused="true"]) [data-sift-hide="true"] {
+	display: none !important;
 }

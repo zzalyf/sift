@@ -1,4 +1,5 @@
 import { ConfigurationKey } from "../utils/Config";
+import { fieldControl, mutedText } from "./ui";
 
 type Props = {
   config: ConfigurationKey;
@@ -17,14 +18,11 @@ function isBooleanOption(options: string[]): boolean {
 
 export const ConfigOption = (props: Props) => {
   return (
-    <div class="flex flex-row items-center overflow-auto bg-surface rounded-xl p-2 pr-4 cursor-pointer">
-      <label
-        for={props.config.Key}
-        class="p-2 flex-1 cursor-pointer capitalize flex flex-col gap-0.5"
-      >
-        {props.config.HumanName}
+    <div class="flex flex-row items-center gap-3 bg-surface rounded-xl px-3 py-2.5">
+      <label for={props.config.Key} class="flex-1 flex flex-col gap-0.5 cursor-pointer">
+        <span class="text-sm">{props.config.HumanName}</span>
         <Show when={props.config.description}>
-          <span class="text-xs text-secondary normal-case">{props.config.description}</span>
+          <span class={mutedText}>{props.config.description}</span>
         </Show>
       </label>
       {isBooleanOption(props.config.Values) ? (
@@ -33,13 +31,13 @@ export const ConfigOption = (props: Props) => {
           id={props.config.Key}
           checked={props.value == "true"}
           onChange={(e) => props.onChange(String(e.target.checked))}
-          class="w-4.5 h-4.5 border rounded-md accent-primary"
+          class="w-4.5 h-4.5 shrink-0 rounded-md border border-secondary accent-primary cursor-pointer"
         />
       ) : (
         <select
           id={props.config.Key}
           onChange={(e) => props.onChange(e.target.value)}
-          class="border-2 p-1.5 rounded-md cursor-pointer"
+          class={`${fieldControl} shrink-0`}
         >
           <For each={props.config.Values}>
             {(opt) => <option selected={props.value == opt}>{opt}</option>}

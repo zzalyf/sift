@@ -55,11 +55,18 @@ reach (`data-sift-hide` in twitch.content), scroll blocking. When you do, still 
   or the bundled background script hits a TDZ error. Don't reorder.
 - **Colors** come from the `@theme` tokens in assets/tailwind.css (Catppuccin). Use the tokens.
 
+## UI
+Popup and options page share `components/ui.ts` — button, heading, field and muted-text class
+strings. Reach for those rather than hand-rolling another button; that file is what keeps the
+two surfaces looking like one product.
+
+Option names are Title Case, including the ones `feedKeys()` generates.
+
 ## Site Controls
 Every platform gets the same four site-level keys from `siteKeys()` in utils/Config.ts:
 `-disabled`, `-blocked`, `-daily-limit`, `-force-dark`. They live in `SiteKeys`, separate from
-the filtering `Keys`, and the Default/Max quick settings deliberately ignore them — resetting
-filters must not silently unblock a site.
+the filtering `Keys`, and the per-section Reset deliberately ignores them — resetting filters
+must not silently unblock a site.
 
 `initSiteControls()` in utils/Config.ts is the one place these combine: it owns the storage
 watches, decides whether the site is off / blocked, and drives `Blocker.ts` and `DarkMode.ts`.

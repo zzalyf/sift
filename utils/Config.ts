@@ -89,7 +89,7 @@ async function initSiteControls(config: PlatformConfiguration) {
 				detail: state.blocked
 					? `${config.HumanName} is blocked in Sift.`
 					: `${Math.round(state.usage / 60)}m on ${config.HumanName} today.`,
-				onSnooze: () => storage.setItem(keys.snooze, Date.now() + 5 * 60 * 1000),
+				onSnooze: () => storage.setItem(keys.snooze, Date.now() + 15 * 60 * 1000),
 			});
 		} else {
 			HideBlockScreen();
@@ -197,8 +197,8 @@ function update(key: string, value: string) {
 export type ConfigurationKey = {
 	HumanName: string;
 	Key: StorageItemKey;
+	/** Values[0] is the default. */
 	Values: string[];
-	Max: string;
 	description?: string;
 };
 
@@ -252,7 +252,6 @@ function siteKeys(platform: string): ConfigurationKey[] {
 			HumanName: "Daily Limit",
 			Key: LimitKey(platform),
 			Values: LimitValues,
-			Max: "30m",
 			description: "Blocks the site once you have spent this long on it today",
 		},
 		booleanKey(DarkKey(platform), "Force Dark Mode", false, "Forces a dark theme, even where the site has none"),
@@ -301,7 +300,6 @@ function shortFormKeys(platform: string, description?: string): ConfigurationKey
 			Key: `sync:${platform}-shortform`,
 			// Values[0] is the default: hide, so shortform stays reachable when shared directly.
 			Values: ["hide", "block", "show"],
-			Max: "block",
 			description: description ?? "block: prevent access · hide: remove from UI · show: no change",
 		},
 	];
@@ -311,10 +309,16 @@ function booleanKey(Key: StorageItemKey, HumanName: string, Default: boolean = t
 	return {
 		HumanName,
 		Key,
-		Max: "true",
 		Values: Default ? ["true", "false"] : ["false", "true"],
 		description,
 	};
+}
+
+function titleCase(value: string) {
+	return value
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
 }
 
 function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
@@ -325,15 +329,13 @@ function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
 			HumanName: "Hide Home Feed",
 			Key: `sync:${platform}-hide-feed`,
 			Values: ["true", "false"],
-			Max: "true",
 			description: "Hides the main home/timeline feed",
 		},
 		...feeds.map(
 			(feed): ConfigurationKey => ({
-				HumanName: `Hide ${feed.replaceAll("-", " ")} Feed`,
+				HumanName: `Hide ${titleCase(feed)} Feed`,
 				Key: `sync:${platform}-hide-${feed}-feed`,
 				Values: ["true", "false"],
-				Max: "true",
 				description: feedDescriptions[feed] ?? `Hides the ${feed.replaceAll("-", " ")} feed`,
 			})
 		),
@@ -344,13 +346,15 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 	"www.youtube.com": platformConfig("youtube", "YouTube", [
 		...shortFormKeys("youtube", "Controls visibility of YouTube Shorts"),
 		...feedKeys("youtube", ["up-next", "subscription"]),
-		booleanKey("sync:youtube-hide-more-from-youtube", "Hide More From Youtube", true, "Hides Premium, Music, and Kids sections in the sidebar"),
+		booleanKey("sync:youtube-hide-more-from-youtube", "Hide More From YouTube", true, "Hides Premium, Music, and Kids sections in the sidebar"),
 		booleanKey("sync:youtube-hide-explore", "Hide Explore Sidebar Section", true, "Hides Gaming, Podcasts, and Channels sections in the sidebar"),
 		booleanKey("sync:youtube-hide-you-section", "Hide You Sidebar Section", false, "Hides History, Watch Later, and Liked Videos in the sidebar"),
-		booleanKey("sync:youtube-hide-end-screen", "Hide End Screen bits", true, "Hides end screen cards and video suggestions"),
+		booleanKey("sync:youtube-hide-end-screen", "Hide End Screen Bits", true, "Hides end screen cards and video suggestions"),
 		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", false, "Removes video thumbnails, leaving titles and channel names"),
 		booleanKey("sync:youtube-hide-comments", "Hide Comments", false, "Hides the comment section under videos"),
 		booleanKey("sync:youtube-hide-community-posts", "Hide Community Posts", false, "Hides channel posts in the home and subscriptions feeds; channel Posts tabs are untouched"),
+		booleanKey("sync:youtube-hide-playables", "Hide Playables", true, "Hides the Playables games shelf in the feed"),
+		booleanKey("sync:youtube-hide-topic-shelves", "Hide Topic Shelves", true, "Hides \"Explore more topics\" chip shelves in the feed"),
 	]),
 	"www.linkedin.com": platformConfig("linkedin", "LinkedIn", [
 		...feedKeys("linkedin"),

@@ -10,7 +10,7 @@ export function showToast(msg: string) {
 export function Toast() {
   return (
     <Show when={message()}>
-      <div class="fixed bottom-4 right-4 z-50 bg-surface border border-secondary text-text text-sm px-4 py-2 rounded-xl shadow-lg pointer-events-none">
+      <div class="fixed bottom-4 right-4 z-50 bg-surface border border-secondary text-text text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none">
         {message()}
       </div>
     </Show>

@@ -3,7 +3,6 @@
   // hides buttons used for scrolling
   button[class*="StyledVideoSwitch"],
   div[class*="DivFeedNavigationContainer"] {
-    outline: 1px solid red;
     display: none !important;
   }
 

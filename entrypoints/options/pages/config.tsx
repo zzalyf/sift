@@ -2,6 +2,7 @@ import { ConfigSection } from "@/components/optionSection";
 import { ConfigurationShape } from "@/utils/Config";
 import { showToast } from "@/components/Toast";
 import MotivationalQuote from "@/components/MotivationalQuote";
+import { fieldControl, ghostButton, mutedText } from "@/components/ui";
 
 export default function ConfigPage() {
   const [query, setQuery] = createSignal("");
@@ -55,14 +56,14 @@ export default function ConfigPage() {
         <MotivationalQuote class="flex-1 text-center px-4" />
         <button
           onClick={exportSettings}
-          class="text-sm text-accent hover:text-primary transition-colors px-2 py-1"
+          class={ghostButton}
           title="Export settings"
         >
           Export
         </button>
         <button
           onClick={() => fileInputRef.click()}
-          class="text-sm text-accent hover:text-primary transition-colors px-2 py-1"
+          class={ghostButton}
           title="Import settings"
         >
           Import
@@ -83,7 +84,7 @@ export default function ConfigPage() {
           placeholder="Search sites..."
           value={query()}
           onInput={(e) => setQuery(e.currentTarget.value)}
-          class="bg-surface text-text placeholder-secondary text-sm rounded-lg px-3 py-1.5 border border-secondary focus:border-primary focus:outline-none w-48"
+          class={`${fieldControl} w-48 cursor-text placeholder-secondary`}
         />
       </header>
       <div class="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-4">
@@ -91,7 +92,7 @@ export default function ConfigPage() {
           {(key) => <ConfigSection key={key} config={ConfigurationShape[key]} collapsible />}
         </For>
         <Show when={filteredKeys().length === 0}>
-          <p class="text-secondary text-sm text-center py-8">No sites found</p>
+          <p class={`${mutedText} text-center py-8`}>No sites found</p>
         </Show>
       </div>
     </main>

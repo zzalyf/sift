@@ -20,7 +20,7 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 
 ## Supported Platforms
 
-- YouTube & YouTube Music (incl. hiding thumbnails, the comment section, and community posts in the feed)
+- YouTube & YouTube Music (incl. hiding thumbnails, comments, community posts, Playables and topic shelves)
 - Twitter/X
 - Instagram
 - TikTok
@@ -41,7 +41,7 @@ Every supported site has the same four controls, independent of its filtering op
 
 - **Turn off** (popup, power button) — Sift stops touching the site; settings are kept
 - **Pause** (popup, ⏸ / 10m) — same, but temporary
-- **Block Site** — replaces the site with a Sift screen, with a "5 more minutes" escape
+- **Block Site** — replaces the site with a Sift screen, with a "15 more minutes" escape
 - **Daily Limit** — off / 5m / 15m / 30m / 1h / 2h; the same screen appears once you are over
 
 Time is only counted for sites that have a limit set, only while the tab is the active tab in

@@ -1,3 +1,5 @@
+import { ghostButton, primaryButton } from "./ui";
+
 type ConfirmationDialogProps = {
   onConfirm: () => void;
   message: string;
@@ -15,24 +17,21 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
         if (typeof props.ref === "function") props.ref(el);
         else if (props.ref) (props as any).ref = el;
       }}
-      class="m-auto bg-surface text-text p-4 rounded-2xl backdrop:bg-black backdrop:opacity-50 "
+      class="m-auto bg-surface text-text p-5 rounded-2xl backdrop:bg-black backdrop:opacity-50"
     >
-      <p>{props.message}</p>
-      <div class="flex flex-row gap-4 justify-center mt-4">
-        <button
-          class="border p-4 pt-2 pb-2 rounded-xl"
-          onClick={() => dialogRef.close()}
-        >
-          No
+      <p class="text-sm">{props.message}</p>
+      <div class="flex flex-row gap-3 justify-end mt-4">
+        <button class={ghostButton} onClick={() => dialogRef.close()}>
+          Cancel
         </button>
         <button
-          class="bg-primary text-primary-foreground p-4 pt-2 pb-2 rounded-xl"
+          class={primaryButton}
           onClick={() => {
             dialogRef.close();
             props.onConfirm();
           }}
         >
-          Yes
+          Confirm
         </button>
       </div>
     </dialog>

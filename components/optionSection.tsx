@@ -1,8 +1,8 @@
 import { ConfigOption } from "./option";
-import QuickSettingsDropdown from "./QuickSettingsDropdown";
 import ConfirmationDialog from "./confiromationDialog";
 import { showToast } from "./Toast";
 import { LimitMinutes, LimitKey, UsageKey } from "@/utils/Config";
+import { ghostButton, groupHeading, mutedText } from "./ui";
 
 type Props = {
   key: string;
@@ -14,25 +14,19 @@ export const ConfigSection = (props: Props) => {
   let confirmDialogRef!: HTMLDialogElement;
   const [collapsed, setCollapsed] = createSignal(props.collapsible ?? false);
 
-  const [values, resource] = createResource(async () => {
-    return Promise.all(
-      props.config.Keys.map(async (key) => ({
+  const load = (keys: ConfigurationKey[]) =>
+    Promise.all(
+      keys.map(async (key) => ({
         config: key,
         value: await storage.getItem(key.Key, { fallback: key.Values[0] }),
       }))
     );
-  });
 
-  // Site controls are deliberately left out of the Default/Max templates below: resetting
-  // the filters should not silently unblock a site or drop its daily limit.
-  const [siteValues, siteResource] = createResource(async () => {
-    return Promise.all(
-      props.config.SiteKeys.map(async (key) => ({
-        config: key,
-        value: await storage.getItem(key.Key, { fallback: key.Values[0] }),
-      }))
-    );
-  });
+  const [values, resource] = createResource(() => load(props.config.Keys));
+
+  // Site controls are kept out of Reset: clearing the filters should not silently unblock a
+  // site or drop the daily limit you set on it.
+  const [siteValues, siteResource] = createResource(() => load(props.config.SiteKeys));
 
   const [usage] = createResource(async () => {
     const [limit, seconds] = await Promise.all([
@@ -44,32 +38,8 @@ export const ConfigSection = (props: Props) => {
     return `${Math.round((seconds ?? 0) / 60)}m of ${minutes}m used today`;
   });
 
-  const isMaxRequired = () => {
-    for (const value of props.config.Keys) {
-      if (value.Values[0] !== value.Max) return true;
-    }
-    return false;
-  };
-
-  const currentSetting = () => {
-    const state = values() ?? [];
-    let isDefault = true;
-    let isMax = true;
-    for (const value of state) {
-      if (isDefault && value.value != value.config.Values[0]) isDefault = false;
-      if (
-        isMax &&
-        value.value != value.config.Max &&
-        value.value != value.config.Values[0]
-      )
-        isMax = false;
-    }
-
-    if (isMax && isDefault && !isMaxRequired()) return "Default";
-    if (isDefault) return "Default";
-    if (isMax) return "Max";
-    return "Custom";
-  };
+  const isDefault = () =>
+    (values() ?? []).every((entry) => entry.value === entry.config.Values[0]);
 
   function applyDefault() {
     const items = (values() ?? []).map(({ config }) => ({
@@ -78,33 +48,14 @@ export const ConfigSection = (props: Props) => {
     }));
     storage.setItems(items);
     resource.refetch();
-    showToast(`${props.config.HumanName}: Default`);
-  }
-
-  function applyMax() {
-    const items = (values() ?? []).map(({ config }) => ({
-      key: config.Key,
-      value: config.Max,
-    }));
-    storage.setItems(items);
-    resource.refetch();
-    showToast(`${props.config.HumanName}: Max`);
-  }
-
-  function onChange(n: string) {
-    if (n == "Custom") return;
-    if (n == "Default") applyDefault();
-    if (n == "Max") confirmDialogRef.showModal();
+    showToast(`${props.config.HumanName}: filters reset`);
   }
 
   return (
-    <section
-      data-key={props.key}
-      class="break-inside-avoid p-4 flex flex-col gap-2"
-    >
-      <div class="flex justify-between items-center">
+    <section data-key={props.key} class="break-inside-avoid p-4 flex flex-col gap-3">
+      <div class="flex justify-between items-center gap-2">
         <button
-          class="flex items-center gap-2 flex-1 text-left"
+          class="flex items-center gap-2 flex-1 text-left cursor-pointer"
           onClick={() => props.collapsible && setCollapsed((c) => !c)}
           aria-expanded={!collapsed()}
           disabled={!props.collapsible}
@@ -112,57 +63,63 @@ export const ConfigSection = (props: Props) => {
           <Show when={props.collapsible}>
             <span class="text-secondary text-xs w-3">{collapsed() ? "▶" : "▼"}</span>
           </Show>
-          <h2 class="text-3xl font-bold">{props.config.HumanName}</h2>
+          <h2 class="text-xl font-bold">{props.config.HumanName}</h2>
         </button>
-        <QuickSettingsDropdown
-          name={props.key}
-          currentSetting={currentSetting()}
-          isMaxRequired={isMaxRequired()}
-          onChange={onChange}
-        />
-      </div>
-      <Show when={!props.collapsible || !collapsed()}>
-        <h3 class="text-xs font-semibold tracking-wide text-secondary uppercase mt-1">Site</h3>
-        <For each={siteValues() ?? []}>
-          {(option) => (
-            <ConfigOption
-              {...option}
-              onChange={(newValue) => {
-                storage.setItem(option.config.Key, newValue);
-                siteResource.refetch();
-                showToast(`${option.config.HumanName}: ${newValue}`);
-              }}
-            />
-          )}
-        </For>
-        <Show when={usage()}>
-          <p class="text-xs text-secondary px-2">{usage()}</p>
-        </Show>
-
-        <h3 class="text-xs font-semibold tracking-wide text-secondary uppercase mt-2">
-          Filtering
-        </h3>
-        <For
-          each={(values() ?? []).toSorted((a, b) =>
-            a.config.HumanName.localeCompare(b.config.HumanName)
-          )}
+        <Show
+          when={!isDefault()}
+          fallback={<span class={`${mutedText} px-1`}>Default</span>}
         >
-          {(option) => (
-            <ConfigOption
-              {...option}
-              onChange={(newValue) => {
-                storage.setItem(option.config.Key, newValue);
-                resource.refetch();
-                showToast(`${option.config.HumanName}: ${newValue}`);
-              }}
-            />
-          )}
-        </For>
+          <button class={ghostButton} onClick={() => confirmDialogRef.showModal()}>
+            Reset
+          </button>
+        </Show>
+      </div>
+
+      <Show when={!props.collapsible || !collapsed()}>
+        <div class="flex flex-col gap-2">
+          <h3 class={groupHeading}>Site</h3>
+          <For each={siteValues() ?? []}>
+            {(option) => (
+              <ConfigOption
+                {...option}
+                onChange={(newValue) => {
+                  storage.setItem(option.config.Key, newValue);
+                  siteResource.refetch();
+                  showToast(`${option.config.HumanName}: ${newValue}`);
+                }}
+              />
+            )}
+          </For>
+          <Show when={usage()}>
+            <p class={`${mutedText} px-1`}>{usage()}</p>
+          </Show>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <h3 class={groupHeading}>Filtering</h3>
+          <For
+            each={(values() ?? []).toSorted((a, b) =>
+              a.config.HumanName.localeCompare(b.config.HumanName)
+            )}
+          >
+            {(option) => (
+              <ConfigOption
+                {...option}
+                onChange={(newValue) => {
+                  storage.setItem(option.config.Key, newValue);
+                  resource.refetch();
+                  showToast(`${option.config.HumanName}: ${newValue}`);
+                }}
+              />
+            )}
+          </For>
+        </div>
       </Show>
+
       <ConfirmationDialog
         ref={(el) => (confirmDialogRef = el)}
-        message={`Apply maximum restrictions for ${props.config.HumanName}?`}
-        onConfirm={applyMax}
+        message={`Reset ${props.config.HumanName} filters to their defaults?`}
+        onConfirm={applyDefault}
       />
     </section>
   );

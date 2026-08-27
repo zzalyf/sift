@@ -72,7 +72,7 @@ export function ShowBlockScreen(screen: BlockScreen) {
 		<h1></h1>
 		<p class="sift-detail"></p>
 		<p class="sift-quote">"Boredom is the birthplace of ideas."</p>
-		<button type="button">5 more minutes</button>`;
+		<button type="button">15 more minutes</button>`;
 	overlay.querySelector("h1")!.textContent = screen.title;
 	overlay.querySelector(".sift-detail")!.textContent = screen.detail;
 	overlay.querySelector("button")!.addEventListener("click", () => screen.onSnooze());

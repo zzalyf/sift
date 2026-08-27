@@ -19,10 +19,6 @@
     display: none;
   }
 
-  //
-  ytm-rich-section-renderer:has(chips-shelf-with-video-shelf-renderer) {
-    outline: 1px solid red;
-  }
 }
 
 // hides the you section with history, watch later, liked videos, and so on
@@ -143,6 +139,25 @@
 
   ytm-rich-item-renderer:has(ytm-backstage-post-thread-renderer, ytm-post-renderer),
   ytm-rich-section-renderer:has(ytm-backstage-post-thread-renderer, ytm-post-renderer) {
+    display: none;
+  }
+}
+
+// hides the "Explore more topics" chip shelf in the feed
+:root:not([sift-paused="true"])[youtube-hide-topic-shelves="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-topic-shelves="true"][page-path="/feed/subscriptions/"] {
+  ytm-rich-section-renderer:has(chips-shelf-with-video-shelf-renderer),
+  chips-shelf-with-video-shelf-renderer {
+    display: none;
+  }
+}
+
+// hides the Playables games shelf in the feed
+:root:not([sift-paused="true"])[youtube-hide-playables="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-playables="true"][page-path="/feed/subscriptions/"] {
+  ytm-rich-section-renderer:has(mini-game-card-view-model, ytm-mini-game-card-view-model),
+  mini-game-card-view-model,
+  ytm-mini-game-card-view-model {
     display: none;
   }
 }
