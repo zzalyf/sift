@@ -52,7 +52,11 @@ function feedClutterSelector() {
   return targets.join(", ");
 }
 
-const LIVE_MARKERS = 'ytd-thumbnail[is-live-video], .ytBadgeShapeLive';
+// Read off a signed-in feed: with thumbnails hidden the thumbnail's own live badge is never
+// rendered, and the only thing left marking a live video is the ring around the channel avatar.
+// All four are class or attribute based, never the translated "LIVE" text.
+const LIVE_MARKERS =
+  'ytd-thumbnail[is-live-video], .ytBadgeShapeLive, .ytSpecAvatarShapeLiveRing, .ytSpecAvatarShapeLiveBadge';
 const SUGGESTED_ITEMS = "ytd-compact-video-renderer, yt-lockup-view-model";
 
 function mark(cells: string, selector: string) {

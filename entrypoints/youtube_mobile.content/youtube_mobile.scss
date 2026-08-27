@@ -167,9 +167,9 @@
 :root:not([sift-paused="true"])[youtube-hide-live="true"][page-path="/"],
 :root:not([sift-paused="true"])[youtube-hide-live="true"][page-path="/feed/subscriptions/"],
 :root:not([sift-paused="true"])[youtube-hide-live="true"][page-path^="/watch"] {
-  ytm-video-with-context-renderer:has(.ytBadgeShapeThumbnailLive),
-  ytm-rich-item-renderer:has(.ytBadgeShapeThumbnailLive),
-  ytm-media-item:has(.ytBadgeShapeThumbnailLive) {
+  ytm-video-with-context-renderer:has(.ytBadgeShapeThumbnailLive, .ytSpecAvatarShapeLiveRing),
+  ytm-rich-item-renderer:has(.ytBadgeShapeThumbnailLive, .ytSpecAvatarShapeLiveRing),
+  ytm-media-item:has(.ytBadgeShapeThumbnailLive, .ytSpecAvatarShapeLiveRing) {
     display: none;
   }
 }
