@@ -5,7 +5,7 @@ let hideNewsFeed = "true";
 let hideExploreFeed = "true";
 
 export default defineContentScript({
-	matches: ["*://www.reddit.com/*"],
+	matches: ["*://www.reddit.com/*", "*://old.reddit.com/*"],
 	runAt: "document_start",
 	main(ctx) {
 		Config(ConfigurationShape["www.reddit.com"], update);

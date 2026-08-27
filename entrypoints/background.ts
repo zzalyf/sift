@@ -16,6 +16,7 @@ const hostnameAliases: Record<string, string> = {
   "m.twitch.tv": "www.twitch.tv",
   "m.youtube.com": "www.youtube.com",
   "pinterest.com": "www.pinterest.com",
+  "old.reddit.com": "www.reddit.com",
 };
 
 // How often we credit time to the site in the focused tab. Short enough that a limit is

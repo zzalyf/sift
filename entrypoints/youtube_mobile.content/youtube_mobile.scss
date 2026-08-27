@@ -161,3 +161,15 @@
     display: none;
   }
 }
+
+// Live streams in the feed and under a video. m.youtube.com marks the badge with its own
+// class, so no text matching is needed here either.
+:root:not([sift-paused="true"])[youtube-hide-live="true"][page-path="/"],
+:root:not([sift-paused="true"])[youtube-hide-live="true"][page-path="/feed/subscriptions/"],
+:root:not([sift-paused="true"])[youtube-hide-live="true"][page-path^="/watch"] {
+  ytm-video-with-context-renderer:has(.ytBadgeShapeThumbnailLive),
+  ytm-rich-item-renderer:has(.ytBadgeShapeThumbnailLive),
+  ytm-media-item:has(.ytBadgeShapeThumbnailLive) {
+    display: none;
+  }
+}

@@ -23,6 +23,7 @@ function App() {
     "m.twitch.tv": "www.twitch.tv",
     "m.youtube.com": "www.youtube.com",
     "pinterest.com": "www.pinterest.com",
+    "old.reddit.com": "www.reddit.com",
   };
 
   onMount(async () => {
@@ -88,7 +89,7 @@ function App() {
         <div class="flex flex-col min-w-80 max-h-[600px]">
           <div class="flex justify-between items-center px-4 pt-4 pb-2">
             <h1 class="flex items-center gap-2 text-xl font-bold text-primary">
-              <img src={browser.runtime.getURL("/icon.svg")} class="w-6 h-6" aria-hidden="true" />
+              <img src={browser.runtime.getURL("/icon.svg")} class="w-[30px] h-[30px]" aria-hidden="true" />
               Sift
             </h1>
             <div class="flex items-center gap-2">

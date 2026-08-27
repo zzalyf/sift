@@ -5,6 +5,7 @@ let hideNextFeed = "true";
 let hidePosts = "false";
 let hidePlayables = "true";
 let hideTopicShelves = "true";
+let hideLive = "true";
 
 export default defineContentScript({
   matches: ["*://www.youtube.com/*"],
@@ -33,6 +34,7 @@ function onUpdate(key: string, value: string) {
   if (key === "sync:youtube-hide-community-posts") hidePosts = value;
   if (key === "sync:youtube-hide-playables") hidePlayables = value;
   if (key === "sync:youtube-hide-topic-shelves") hideTopicShelves = value;
+  if (key === "sync:youtube-hide-live") hideLive = value;
 }
 
 // A feed cell keeps its contents inside a shadow root, where :has() cannot reach, so hiding the
@@ -45,21 +47,33 @@ function feedClutterSelector() {
   if (hidePosts === "true") targets.push("ytd-post-renderer", "ytd-backstage-post-thread-renderer");
   if (hidePlayables === "true") targets.push("ytd-mini-game-card-view-model", "mini-game-card-view-model");
   if (hideTopicShelves === "true") targets.push("chips-shelf-with-video-shelf-renderer");
+  // live is matched by structure, never by the badge text, which is translated
+  if (hideLive === "true") targets.push(LIVE_MARKERS);
   return targets.join(", ");
 }
 
-function markFeedClutter() {
-  const path = GetPath();
-  const onFeed = path === "/" || path === "/feed/subscriptions/";
-  const selector = onFeed ? feedClutterSelector() : "";
+const LIVE_MARKERS = 'ytd-thumbnail[is-live-video], .ytBadgeShapeLive';
+const SUGGESTED_ITEMS = "ytd-compact-video-renderer, yt-lockup-view-model";
 
-  document.querySelectorAll<HTMLElement>(FEED_CELLS).forEach((cell) => {
+function mark(cells: string, selector: string) {
+  document.querySelectorAll<HTMLElement>(cells).forEach((cell) => {
     const holds =
       selector !== "" &&
       !!(cell.querySelector(selector) ?? cell.shadowRoot?.querySelector(selector));
     if (holds) cell.setAttribute("data-sift-hide", "true");
     else if (cell.hasAttribute("data-sift-hide")) cell.removeAttribute("data-sift-hide");
   });
+}
+
+function markFeedClutter() {
+  const path = GetPath();
+  const onFeed = path === "/" || path === "/feed/subscriptions/";
+  mark(FEED_CELLS, onFeed ? feedClutterSelector() : "");
+
+  // Suggested videos beside a video hide their badge in a shadow root too, so :has() is no
+  // more use here than it is in the feed.
+  const onWatch = path.startsWith("/watch");
+  mark(SUGGESTED_ITEMS, onWatch && hideLive === "true" ? LIVE_MARKERS : "");
 }
 
 function clearFeedMarks() {

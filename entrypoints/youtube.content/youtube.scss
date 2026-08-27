@@ -239,3 +239,8 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 :root:not([sift-paused="true"]) [data-sift-hide="true"] {
 	display: none !important;
 }
+
+// Live streams are matched by markFeedClutter() in index.ts, in the feed and in the suggested
+// list beside a video: both keep the live badge inside a shadow root, out of :has()'s reach.
+// ytd-thumbnail[is-live-video] and .ytBadgeShapeLive are the same in every locale, unlike the
+// badge's "LIVE" text.

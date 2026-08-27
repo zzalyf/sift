@@ -5,6 +5,9 @@
 }
 
 :root:not([sift-paused="true"])[twitter-hide-creator-studio="true"] {
+	// confirmed against a signed-in session: the link is /i/jf/creators/studio. The two older
+	// spellings are kept in case X still serves them somewhere.
+	[href*="creators/studio"],
 	[href*="creator_studio"],
 	[href*="creatorstudio"] {
 		display: none;
@@ -179,4 +182,10 @@
 		opacity: 0 !important;
 		visibility: hidden !important;
 	}
+}
+
+// The Live on X module, marked by markLiveModule() in index.ts — X gives it no stable
+// selector of its own.
+:root:not([sift-paused="true"])[twitter-hide-live="true"] [data-sift-hide="true"] {
+	display: none !important;
 }

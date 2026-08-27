@@ -28,3 +28,21 @@
 		display: none;
 	}
 }
+
+/* old.reddit.com — a completely different DOM to www.reddit.com, so the same options need
+   their own selectors here. The two sets never collide: #siteTable exists only on old,
+   .subgrid-container only on new. Options with no counterpart on old Reddit (related posts,
+   explore, news) simply do nothing there. */
+
+:root:not([sift-paused="true"])[reddit-hide-feed="true"][page-path="/"] {
+	#siteTable {
+		display: none;
+	}
+}
+
+:root:not([sift-paused="true"])[reddit-hide-popular-communities-feed="true"] {
+	// old Reddit's discovery strip, the closest thing it has to popular communities
+	.trending-subreddits {
+		display: none;
+	}
+}

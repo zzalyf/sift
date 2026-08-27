@@ -321,21 +321,30 @@ function titleCase(value: string) {
 		.join(" ");
 }
 
-function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
-	if (feeds === undefined) feeds = [];
+/**
+ * Feed options for a platform. `defaults` turns individual ones off by default — key "home"
+ * for the main feed, the feed's own name for the rest — because what counts as noise differs
+ * per site: hiding YouTube's home feed is a bigger ask than hiding its recommendations.
+ */
+function feedKeys(
+	platform: string,
+	feeds: string[] = [],
+	defaults: Record<string, boolean> = {}
+): ConfigurationKey[] {
+	const values = (on: boolean) => (on ? ["true", "false"] : ["false", "true"]);
 
 	return [
 		{
 			HumanName: "Hide Home Feed",
 			Key: `sync:${platform}-hide-feed`,
-			Values: ["true", "false"],
+			Values: values(defaults.home ?? true),
 			description: "Hides the main home/timeline feed",
 		},
 		...feeds.map(
 			(feed): ConfigurationKey => ({
 				HumanName: `Hide ${titleCase(feed)} Feed`,
 				Key: `sync:${platform}-hide-${feed}-feed`,
-				Values: ["true", "false"],
+				Values: values(defaults[feed] ?? true),
 				description: feedDescriptions[feed] ?? `Hides the ${feed.replaceAll("-", " ")} feed`,
 			})
 		),
@@ -345,16 +354,17 @@ function feedKeys(platform: string, feeds?: string[]): ConfigurationKey[] {
 export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 	"www.youtube.com": platformConfig("youtube", "YouTube", [
 		...shortFormKeys("youtube", "Controls visibility of YouTube Shorts"),
-		...feedKeys("youtube", ["up-next", "subscription"]),
+		...feedKeys("youtube", ["up-next", "subscription"], { home: false, subscription: false }),
 		booleanKey("sync:youtube-hide-more-from-youtube", "Hide More From YouTube", true, "Hides Premium, Music, and Kids sections in the sidebar"),
 		booleanKey("sync:youtube-hide-explore", "Hide Explore Sidebar Section", true, "Hides Gaming, Podcasts, and Channels sections in the sidebar"),
 		booleanKey("sync:youtube-hide-you-section", "Hide You Sidebar Section", false, "Hides History, Watch Later, and Liked Videos in the sidebar"),
 		booleanKey("sync:youtube-hide-end-screen", "Hide End Screen Bits", true, "Hides end screen cards and video suggestions"),
-		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", false, "Removes video thumbnails, leaving titles and channel names"),
-		booleanKey("sync:youtube-hide-comments", "Hide Comments", false, "Hides the comment section under videos"),
-		booleanKey("sync:youtube-hide-community-posts", "Hide Community Posts", false, "Hides channel posts in the home and subscriptions feeds; channel Posts tabs are untouched"),
+		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", true, "Removes video thumbnails, leaving titles and channel names"),
+		booleanKey("sync:youtube-hide-comments", "Hide Comments", true, "Hides the comment section under videos"),
+		booleanKey("sync:youtube-hide-community-posts", "Hide Community Posts", true, "Hides channel posts in the home and subscriptions feeds; channel Posts tabs are untouched"),
 		booleanKey("sync:youtube-hide-playables", "Hide Playables", true, "Hides the Playables games shelf in the feed"),
 		booleanKey("sync:youtube-hide-topic-shelves", "Hide Topic Shelves", true, "Hides \"Explore more topics\" chip shelves in the feed"),
+		booleanKey("sync:youtube-hide-live", "Hide Live Streams", true, "Hides live streams in the home feed and in suggested videos"),
 	]),
 	"www.linkedin.com": platformConfig("linkedin", "LinkedIn", [
 		...feedKeys("linkedin"),
@@ -371,7 +381,7 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		...shortFormKeys("facebook", "Controls visibility of Reels"),
 	]),
 	"www.instagram.com": platformConfig("instagram", "Instagram", [
-		booleanKey("sync:instagram-hide-feed", "Hide Following Feed", true, "Hides posts from accounts you follow on the home page"),
+		booleanKey("sync:instagram-hide-feed", "Hide Following Feed", false, "Hides posts from accounts you follow on the home page"),
 		booleanKey("sync:instagram-hide-for-you-feed", "Hide For You Feed", true, "Hides the algorithmic For You tab on the home page"),
 		...feedKeys("instagram", ["explore", "more-from"]).slice(1),
 		booleanKey("sync:instagram-hide-explore-button", "Hide Explore Button", true, "Hides the Explore/magnifier button in the sidebar"),
@@ -391,10 +401,11 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		booleanKey("sync:substack-hide-related", "Hide Related", true, "Hides related posts on note pages"),
 	]),
 	"www.twitter.com": platformConfig("twitter", "Twitter/X", [
-		booleanKey("sync:twitter-hide-feed", "Hide Following Feed", true, "Hides posts in the Following tab"),
+		booleanKey("sync:twitter-hide-feed", "Hide Following Feed", false, "Hides posts in the Following tab"),
 		...feedKeys("twitter", ["trending", "for-you", "who-to-follow", "whats-new", "explore"]).slice(1),
 		booleanKey("sync:twitter-hide-premium", "Hide Premium", true, "Hides Premium subscription upsells and buttons"),
 		booleanKey("sync:twitter-hide-grok", "Hide Grok", true, "Hides the Grok AI button in the sidebar"),
+		booleanKey("sync:twitter-hide-live", "Hide Live On X", true, "Hides the Live on X broadcasts and Spaces module in the sidebar"),
 		booleanKey("sync:twitter-hide-creator-studio", "Hide Creator Studio", true, "Hides Creator Studio links in the sidebar"),
 	]),
 	"www.twitch.tv": platformConfig("twitch", "Twitch", [

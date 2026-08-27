@@ -51,7 +51,7 @@ export default function ConfigPage() {
   return (
     <main class="bg-background min-h-svh text-text">
       <header class="sticky top-0 z-10 bg-background border-b border-surface px-6 py-4 flex items-center gap-3">
-        <img src="/icon.svg" class="w-8 h-8" aria-hidden="true" />
+        <img src="/icon.svg" class="w-10 h-10" aria-hidden="true" />
         <span class="text-2xl font-bold text-primary">Sift</span>
         <MotivationalQuote class="flex-1 text-center px-4" />
         <button
