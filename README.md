@@ -4,6 +4,16 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 
 *"Boredom is the birthplace of ideas."*
 
+## Screenshots
+
+| Popup | Settings |
+| --- | --- |
+| <img src="docs/screenshots/popup.png" alt="Sift popup showing per-site controls for YouTube" width="380"> | <img src="docs/screenshots/settings.png" alt="Sift settings page" width="380"> |
+
+| Daily limit reached | Settings on a phone |
+| --- | --- |
+| <img src="docs/screenshots/daily-limit.png" alt="Sift daily limit screen" width="380"> | <img src="docs/screenshots/settings-mobile.png" alt="Sift settings on Firefox for Android" width="190"> |
+
 ## Features
 
 - Hide "For You" / algorithmic feeds independently from "Following" feeds
@@ -20,11 +30,14 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 
 ## Supported Platforms
 
-- YouTube & YouTube Music (incl. hiding thumbnails, comments, community posts, Playables and topic shelves)
+- **YouTube & YouTube Music** — on top of the feed options, YouTube can also hide:
+  - thumbnails (rows collapse to titles and channel names), comments, and end-screen cards
+  - community posts, live streams, Mixes and radio playlists, Playables and "Explore more topics"
+    shelves — all in the feed only, so anything you open on purpose still works
 - Twitter/X
 - Instagram
 - TikTok
-- Reddit
+- Reddit (new and old.reddit.com)
 - LinkedIn
 - Facebook
 - Bluesky
@@ -78,8 +91,17 @@ knows it, and falls back to an inverting filter only if the page still renders l
 
 **`{platform}-paused`** — `"true"` / `"false"` / Unix timestamp — pauses all filtering for that site; a timestamp value auto-resumes at that time
 
-> Default for the feed options is the most restrictive value. The site controls above default
-> to off — Sift never blocks or limits a site until you ask it to.
+> Defaults are set per site rather than by a blanket rule: YouTube hides thumbnails, comments
+> and community posts out of the box but leaves the home and subscription feeds alone, while
+> Instagram and Twitter/X leave the Following feed alone and hide the algorithmic one. The site
+> controls above all default to off — Sift never blocks or limits a site until you ask it to.
+
+## Requirements
+
+Firefox 140 or later, and Firefox for Android 142 or later. Two things set that floor: the
+stylesheets rely on `:has()` (Firefox 121), and the manifest declares
+`data_collection_permissions`, which AMO requires of new submissions and which landed in 140
+(142 on Android).
 
 ## Building
 
@@ -93,11 +115,15 @@ Load the extension in Firefox via `about:debugging` → Load Temporary Add-on �
 
 ### Firefox Android
 
-Transfer the `.zip` file to the device and install via Firefox for Android (Settings → Add-ons → Install from file). For remote debugging, use ADB over WiFi:
+Firefox for Android cannot install an arbitrary `.zip` from storage — add-ons come from AMO. For
+development, install the build over ADB instead, with Firefox Nightly or Beta on the device and
+USB (or wireless) debugging enabled:
 
 ```sh
 adb pair <ip>:<pair-port> <code>   # from Developer Options → Wireless debugging → Pair device
 adb connect <ip>:<port>
+npx web-ext run -t firefox-android --source-dir .output/firefox-mv2
 ```
 
-Then open `about:debugging` on desktop Firefox and connect to the device.
+`web-ext` lists the connected devices if you leave off `--android-device`. For remote debugging,
+open `about:debugging` on desktop Firefox and connect to the device.
