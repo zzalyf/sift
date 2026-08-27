@@ -91,23 +91,29 @@
   display: none;
 }
 
-// Replaces thumbnails with a flat placeholder instead of removing them, so the list keeps
-// its layout and the titles stay readable. Uses opacity because m.youtube.com lazy-loads with
-// visibility; see the desktop stylesheet.
+// Removes video thumbnails outright; see the desktop stylesheet. Covers the three ways
+// m.youtube.com paints one: an <img>, an inline background-image, and an autoplaying
+// inline preview <video>.
 :root:not([sift-paused="true"])[youtube-hide-thumbnails="true"] {
   ytm-thumbnail-cover,
   yt-thumbnail-view-model,
+  // the stacked-card decoration behind album art is tinted with the cover's colour,
+  // so it survives as a coloured strip once the cover itself is gone
+  yt-collections-stack,
+  // a sponsored slot's artwork is a thumbnail like any other here; the ad's text stays,
+  // Sift is not an ad blocker
+  ad-image-view-model,
   .video-thumbnail-container,
-  .media-item-thumbnail-container {
-    background-color: #313244;
-    border-radius: 12px;
-  }
-
-  ytm-thumbnail-cover img,
-  yt-thumbnail-view-model img,
-  .video-thumbnail-container img,
-  .media-item-thumbnail-container img {
-    opacity: 0;
+  .media-item-thumbnail-container,
+  ytm-video-preview,
+  ytm-video-preview-portal,
+  // the whole hero card: its call-to-action badge is positioned over the image, so hiding
+  // only the image left "YOUTUBE MIX" floating across the channel name
+  ytm-watch-card-hero-video-renderer,
+  ytm-collage-hero-image-renderer,
+  .simple-card-thumbnail,
+  .YtmCollageHeroImageRendererCollageImage {
+    display: none !important;
   }
 }
 

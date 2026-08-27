@@ -348,7 +348,7 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 		booleanKey("sync:youtube-hide-explore", "Hide Explore Sidebar Section", true, "Hides Gaming, Podcasts, and Channels sections in the sidebar"),
 		booleanKey("sync:youtube-hide-you-section", "Hide You Sidebar Section", false, "Hides History, Watch Later, and Liked Videos in the sidebar"),
 		booleanKey("sync:youtube-hide-end-screen", "Hide End Screen bits", true, "Hides end screen cards and video suggestions"),
-		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", false, "Replaces video thumbnails with a flat placeholder, leaving the titles"),
+		booleanKey("sync:youtube-hide-thumbnails", "Hide Thumbnails", false, "Removes video thumbnails, leaving titles and channel names"),
 		booleanKey("sync:youtube-hide-comments", "Hide Comments", false, "Hides the comment section under videos"),
 	]),
 	"www.linkedin.com": platformConfig("linkedin", "LinkedIn", [

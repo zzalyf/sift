@@ -176,28 +176,25 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 	}
 }
 
-// Replaces thumbnails with a flat placeholder instead of removing them, so the grid keeps
-// its layout and the titles stay readable.
-//
-// Uses opacity, not visibility: YouTube drives its own lazy loading with visibility, and
-// competing with it meant forcing avatars visible that the page wanted hidden. Scoping to the
-// thumbnail containers leaves avatars alone entirely.
+// Removes video thumbnails outright — the row collapses to its title and metadata rather than
+// keeping a placeholder box, so there is nothing left to catch the eye.
 :root:not([sift-paused="true"])[youtube-hide-thumbnails="true"] {
 	ytd-thumbnail,
 	ytd-playlist-thumbnail,
 	yt-thumbnail-view-model,
-	yt-collection-thumbnail-view-model {
-		background-color: #313244;
-		border-radius: 12px;
-	}
-
-	ytd-thumbnail img,
-	ytd-playlist-thumbnail img,
-	yt-thumbnail-view-model img,
-	yt-collection-thumbnail-view-model img,
+	// the stacked-card decoration behind album art is tinted with the cover's colour,
+	// so it survives as a coloured strip once the cover itself is gone
+	yt-collections-stack,
+	// a sponsored slot's artwork is a thumbnail like any other here; the ad's text stays,
+	// Sift is not an ad blocker
+	ad-image-view-model,
+	yt-collection-thumbnail-view-model,
 	ytd-moving-thumbnail-renderer,
-	.ytp-videowall-still-image {
-		opacity: 0;
+	.ytp-videowall-still-image,
+	// artist/channel header artwork on search results
+	cinematic-container-view-model,
+	yt-content-preview-image-view-model {
+		display: none !important;
 	}
 }
 
