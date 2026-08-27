@@ -15,13 +15,15 @@ export default defineConfig({
     browser_specific_settings: {
       gecko: {
         id: "{08db9950-75b9-4264-a900-8ce20131614f}",
-        strict_min_version: "109.0",
+        // 121 is where :has() shipped, which every stylesheet here depends on. Anything older
+        // installs happily and then filters nothing.
+        strict_min_version: "121.0",
       },
       gecko_android: {
-        strict_min_version: "113.0",
+        strict_min_version: "121.0",
       },
     },
-    permissions: ["storage", "activeTab", "tabs"],
+    permissions: ["storage", "tabs"],
   },
   vite: () => {
     return {

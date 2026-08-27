@@ -86,9 +86,24 @@ export default defineBackground(() => {
     }
   }
 
+  // Most people have no daily limits at all, so the tick should cost nothing then. This set is
+  // what makes the common case a single comparison instead of a tab query every 15 seconds.
+  let limited = new Set<string>();
+
+  async function refreshLimits() {
+    const entries = await Promise.all(
+      Object.values(ConfigurationShape).map(
+        async (c) => [c.Platform, LimitMinutes(await storage.getItem<string>(LimitKey(c.Platform)))] as const
+      )
+    );
+    limited = new Set(entries.filter(([, minutes]) => minutes > 0).map(([platform]) => platform));
+  }
+
   // Only sites with a daily limit are timed, so nothing is written for sites you have not
   // put a limit on. The content script watches the usage key and shows the block screen.
   async function trackUsage() {
+    if (limited.size === 0) return;
+
     let window: Browser.windows.Window;
     try {
       window = await browser.windows.getLastFocused();
@@ -99,10 +114,7 @@ export default defineBackground(() => {
 
     const [tab] = await browser.tabs.query({ active: true, windowId: window.id });
     const config = configFor(tab?.url);
-    if (!config) return;
-
-    const limit = await storage.getItem<string>(LimitKey(config.Platform));
-    if (LimitMinutes(limit) === 0) return;
+    if (!config || !limited.has(config.Platform)) return;
 
     const [disabledVal, pausedVal, snooze] = await Promise.all([
       storage.getItem<string>(config.DisabledKey),
@@ -129,6 +141,7 @@ export default defineBackground(() => {
   }
 
   pruneUsage();
+  refreshLimits();
   setInterval(trackUsage, TICK_SECONDS * 1000);
   setInterval(pruneUsage, 60 * 60 * 1000);
 
@@ -136,8 +149,9 @@ export default defineBackground(() => {
   browser.tabs.onUpdated.addListener((tabId, info) => {
     if (info.status === "complete") updateBadge(tabId);
   });
-  browser.storage.onChanged.addListener(async (_changes, area) => {
+  browser.storage.onChanged.addListener(async (changes, area) => {
     if (area !== "sync") return;
+    if (Object.keys(changes).some((key) => key.endsWith("-daily-limit"))) refreshLimits();
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (tab?.id) updateBadge(tab.id);
   });

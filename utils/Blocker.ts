@@ -3,12 +3,34 @@
 // Runs at document_start, before the page has a <body>, so everything here attaches to
 // documentElement and re-attaches itself if the site wipes it.
 
-const ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="72" height="72" aria-hidden="true">
-	<rect width="512" height="512" rx="96" fill="#1e1e2e"/>
-	<rect x="96" y="152" width="320" height="44" rx="22" fill="#cba6f7"/>
-	<rect x="160" y="236" width="192" height="44" rx="22" fill="#cba6f7"/>
-	<rect x="212" y="320" width="88" height="44" rx="22" fill="#89b4fa"/>
-</svg>`;
+// Built element by element rather than assigned as markup: innerHTML is the one thing AMO's
+// automated review always flags, and there is no reason to hand it a false positive.
+function icon() {
+	const ns = "http://www.w3.org/2000/svg";
+	const svg = document.createElementNS(ns, "svg");
+	svg.setAttribute("viewBox", "0 0 512 512");
+	svg.setAttribute("width", "72");
+	svg.setAttribute("height", "72");
+	svg.setAttribute("aria-hidden", "true");
+
+	const bars: [number, number, number, number, number, string][] = [
+		[0, 0, 512, 512, 96, "#1e1e2e"],
+		[96, 152, 320, 44, 22, "#cba6f7"],
+		[160, 236, 192, 44, 22, "#cba6f7"],
+		[212, 320, 88, 44, 22, "#89b4fa"],
+	];
+	for (const [x, y, width, height, radius, fill] of bars) {
+		const rect = document.createElementNS(ns, "rect");
+		rect.setAttribute("x", String(x));
+		rect.setAttribute("y", String(y));
+		rect.setAttribute("width", String(width));
+		rect.setAttribute("height", String(height));
+		rect.setAttribute("rx", String(radius));
+		rect.setAttribute("fill", fill);
+		svg.appendChild(rect);
+	}
+	return svg;
+}
 
 const CSS = `
 #sift-block {
@@ -68,14 +90,24 @@ export function ShowBlockScreen(screen: BlockScreen) {
 
 	overlay = document.createElement("div");
 	overlay.id = "sift-block";
-	overlay.innerHTML = `${ICON}
-		<h1></h1>
-		<p class="sift-detail"></p>
-		<p class="sift-quote">"Boredom is the birthplace of ideas."</p>
-		<button type="button">15 more minutes</button>`;
-	overlay.querySelector("h1")!.textContent = screen.title;
-	overlay.querySelector(".sift-detail")!.textContent = screen.detail;
-	overlay.querySelector("button")!.addEventListener("click", () => screen.onSnooze());
+
+	const title = document.createElement("h1");
+	title.textContent = screen.title;
+
+	const detail = document.createElement("p");
+	detail.className = "sift-detail";
+	detail.textContent = screen.detail;
+
+	const quote = document.createElement("p");
+	quote.className = "sift-quote";
+	quote.textContent = '"Boredom is the birthplace of ideas."';
+
+	const snooze = document.createElement("button");
+	snooze.type = "button";
+	snooze.textContent = "15 more minutes";
+	snooze.addEventListener("click", () => screen.onSnooze());
+
+	overlay.append(icon(), title, detail, quote, snooze);
 
 	attach();
 

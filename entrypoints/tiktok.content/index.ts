@@ -29,7 +29,6 @@ function scrollBlockerActive(event: Event) {
   if (path === "/" && mobile) onAScrollPage = true;
   if (path.includes("video")) onAScrollPage = true;
 
-  console.log(onAScrollPage && shortform !== "show" && !inComments);
 
   return onAScrollPage && shortform !== "show" && !inComments;
 }
