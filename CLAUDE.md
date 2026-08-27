@@ -1,4 +1,69 @@
-# CLAUDE.md — stk
+# CLAUDE.md — sift
+
+## The Project
+Browser extension that hides algorithmic feeds and distracting content on social media.
+Fork of [Feedless](https://github.com/ZMensRain/Feedless). Firefox is the primary target (MV2).
+
+Stack: [WXT](https://wxt.dev) · Solid · Tailwind v4 · SCSS · pnpm · TypeScript.
+
+```sh
+pnpm i               # postinstall runs `wxt prepare` — generates .wxt/, required before tsc works
+pnpm compile         # tsc --noEmit — the only automated check in this repo
+pnpm dev:firefox     # live-reload dev build
+pnpm zip:firefox     # .output/sift-{version}-firefox.zip
+```
+
+There are no tests and no linter. "Verify" means `pnpm compile` plus loading the build in the
+browser (`about:debugging` → Load Temporary Add-on → any file in `.output/firefox-mv2/`).
+Don't invent a test suite to satisfy Goal-Driven Execution below — state the manual check instead.
+
+## How Filtering Works
+Almost everything is CSS. Do not reach for JS first.
+
+`Config()` (utils/Config.ts) reads each storage key and mirrors its value onto `:root` as an
+attribute, stripping the `sync:` prefix. SCSS then gates on that attribute:
+
+```scss
+:root:not([sift-paused="true"])[youtube-hide-explore="true"] { ... }
+```
+
+Supporting attributes: `AddPath()` → `page-path`, `AddParams()` → `page-params`,
+`sift-paused` → set by the pause logic.
+
+Use JS only when CSS genuinely can't do it — redirects, marking elements the selector can't
+reach (`data-sift-hide` in twitch.content), scroll blocking. When you do, still hide via CSS
+(`[data-sift-hide="true"] { display: none !important; }`); inline styles lose to the site's own
+`!important` rules.
+
+## Conventions
+- **Auto-imports.** WXT injects `defineContentScript`, `defineBackground`, `storage`, `browser`,
+  everything in `utils/`, and the Solid primitives. Don't add explicit imports for those — only
+  `@/`-aliased imports the auto-import doesn't cover (e.g. `ConfigurationShape` in background.ts).
+- **Storage keys** are `sync:{platform}-{thing}`. `Values[0]` is both the default and the most
+  restrictive value; the badge counts keys whose stored value differs from `Values[0]`.
+- **Formatting is mixed** — newer files (Config.ts, ShadowRoot.ts, twitch, reddit) use tabs,
+  older ones 2 spaces. Match the file you're in, not the repo.
+- **utils/Config.ts ordering matters.** The helpers must stay declared above `ConfigurationShape`
+  or the bundled background script hits a TDZ error. Don't reorder.
+- **Colors** come from the `@theme` tokens in assets/tailwind.css (Catppuccin). Use the tokens.
+
+## Adding a Platform
+1. Entry in `ConfigurationShape` (utils/Config.ts), **keyed by the exact hostname** the popup
+   will see from `new URL(tab.url).hostname`.
+2. `entrypoints/{name}.content/index.ts` + `{name}.scss`, with `runAt: "document_start"`.
+3. `matches` in the content script.
+4. If the site has alternate hostnames (m.*, x.com), add them to `hostnameAliases` — which
+   exists **twice**, in `entrypoints/background.ts` and `entrypoints/popup/main.tsx`. Keep both
+   in sync; they have drifted before.
+
+A missing alias is silent: the content script still filters the page, but the popup and the
+badge show nothing, because both look the hostname up in `ConfigurationShape` directly.
+
+## Release
+Push to `main` → `.github/workflows/latest-release.yml` builds both browsers and overwrites the
+`latest` GitHub release. Bump `version` in package.json; it feeds the manifest and
+`VITE_APP_VERSION`.
+
 
 ## Think Before Coding
 Don't assume. Don't hide confusion. Surface tradeoffs.

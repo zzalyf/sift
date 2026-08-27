@@ -4,7 +4,7 @@ export default defineContentScript({
   matches: ["*://*.pinterest.com/*"],
   runAt: "document_start",
   main(ctx) {
-    Config(ConfigurationShape["pinterest.com"]);
+    Config(ConfigurationShape["www.pinterest.com"]);
     NewObserver(unfeeder, ctx);
     unfeeder();
   },

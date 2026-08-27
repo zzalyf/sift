@@ -213,7 +213,7 @@ export const ConfigurationShape: Record<string, PlatformConfiguration> = {
 			booleanKey("sync:youtube_music-hide-related", "Hide Related", true, "Hides related tracks panel on song pages"),
 		],
 	},
-	"pinterest.com": {
+	"www.pinterest.com": {
 		HumanName: "Pinterest",
 		PauseKey: "sync:pinterest-paused",
 		Keys: [...feedKeys("pinterest", ["explore", "search", "related-pins", "board"])],

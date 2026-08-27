@@ -4,6 +4,9 @@ const hostnameAliases: Record<string, string> = {
   "x.com": "www.twitter.com",
   "www.x.com": "www.twitter.com",
   "twitter.com": "www.twitter.com",
+  "m.twitch.tv": "www.twitch.tv",
+  "m.youtube.com": "www.youtube.com",
+  "pinterest.com": "www.pinterest.com",
 };
 
 export default defineBackground(() => {
@@ -14,7 +17,7 @@ export default defineBackground(() => {
   });
 
   async function updateBadge(tabId: number) {
-    let tab: browser.tabs.Tab;
+    let tab: Browser.tabs.Tab;
     try {
       tab = await browser.tabs.get(tabId);
     } catch {

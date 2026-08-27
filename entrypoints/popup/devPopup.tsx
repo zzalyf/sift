@@ -6,7 +6,7 @@ export default function DevPopup() {
     let hostname = new URL(tab.url ?? "").hostname;
     if (hostname === "m.youtube.com") hostname = "www.youtube.com";
     else if (hostname === "x.com") hostname = "www.twitter.com";
-    else if (hostname.includes("pinterest")) hostname = "pinterest.com";
+    else if (hostname.includes("pinterest")) hostname = "www.pinterest.com";
     return hostname ?? "";
   });
 

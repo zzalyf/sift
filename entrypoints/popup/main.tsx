@@ -19,6 +19,8 @@ function App() {
     "www.x.com": "www.twitter.com",
     "twitter.com": "www.twitter.com",
     "m.twitch.tv": "www.twitch.tv",
+    "m.youtube.com": "www.youtube.com",
+    "pinterest.com": "www.pinterest.com",
   };
 
   onMount(async () => {
