@@ -15,17 +15,19 @@ export default defineConfig({
     browser_specific_settings: {
       gecko: {
         id: "{08db9950-75b9-4264-a900-8ce20131614f}",
-        // 121 is where :has() shipped, which every stylesheet here depends on. Anything older
-        // installs happily and then filters nothing.
-        strict_min_version: "121.0",
-        // Required for new AMO submissions. Sift collects nothing: settings live in the
-        // browser's own storage and never leave the device beyond Firefox Sync.
+        // Two floors apply. :has(), which every stylesheet here depends on, needs 121 — below
+        // that Sift installs happily and then filters nothing. data_collection_permissions,
+        // which AMO requires of new submissions, needs 140 (142 on Android). The higher one
+        // wins; 140 is over a year old and is the current ESR line.
+        strict_min_version: "140.0",
+        // Sift collects nothing: settings live in the browser's own storage and never leave
+        // the device beyond Firefox Sync.
         data_collection_permissions: {
           required: ["none"],
         },
       },
       gecko_android: {
-        strict_min_version: "121.0",
+        strict_min_version: "142.0",
       },
     },
     permissions: ["storage", "tabs"],
