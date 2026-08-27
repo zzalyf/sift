@@ -73,13 +73,23 @@ export function ApplyDarkMode(on: boolean, platform: string) {
 }
 
 // The filter does not change computed background-color, so this stays stable once inverted.
+//
+// Sampling document.body is not enough: on YouTube the body is transparent and a child paints
+// the background, which read as "not light" and would have skipped the fallback on any light
+// site built the same way. Sample what is actually painted mid-viewport instead, walking up
+// until something has an opaque background.
 function rendersLight() {
-	const target = document.body ?? document.documentElement;
-	if (!target) return false;
-	const bg = getComputedStyle(target).backgroundColor;
-	const rgb = bg.match(/\d+(\.\d+)?/g)?.map(Number);
-	if (!rgb || rgb.length < 3) return false;
-	if (rgb.length > 3 && rgb[3] === 0) return false; // transparent: nothing painted yet
-	const luminance = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
-	return luminance > 0.55;
+	const start =
+		document.elementFromPoint(window.innerWidth / 2, Math.floor(window.innerHeight * 0.6)) ??
+		document.body;
+
+	for (let node: Element | null = start; node; node = node.parentElement) {
+		const rgb = getComputedStyle(node)
+			.backgroundColor.match(/\d+(\.\d+)?/g)
+			?.map(Number);
+		if (!rgb || rgb.length < 3) continue;
+		if (rgb.length > 3 && rgb[3] === 0) continue; // transparent: whatever is behind it counts
+		return (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255 > 0.55;
+	}
+	return false;
 }

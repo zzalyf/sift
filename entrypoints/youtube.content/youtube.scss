@@ -178,12 +178,15 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 
 // Replaces thumbnails with a flat placeholder instead of removing them, so the grid keeps
 // its layout and the titles stay readable.
+//
+// Uses opacity, not visibility: YouTube drives its own lazy loading with visibility, and
+// competing with it meant forcing avatars visible that the page wanted hidden. Scoping to the
+// thumbnail containers leaves avatars alone entirely.
 :root:not([sift-paused="true"])[youtube-hide-thumbnails="true"] {
 	ytd-thumbnail,
 	ytd-playlist-thumbnail,
 	yt-thumbnail-view-model,
-	yt-collection-thumbnail-view-model,
-	.ytp-videowall-still-image {
+	yt-collection-thumbnail-view-model {
 		background-color: #313244;
 		border-radius: 12px;
 	}
@@ -192,17 +195,9 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 	ytd-playlist-thumbnail img,
 	yt-thumbnail-view-model img,
 	yt-collection-thumbnail-view-model img,
-	yt-image img.yt-core-image,
 	ytd-moving-thumbnail-renderer,
 	.ytp-videowall-still-image {
-		visibility: hidden;
-	}
-
-	// avatars are not thumbnails — keep faces so channels stay recognisable
-	#avatar img,
-	yt-avatar-shape img,
-	ytd-channel-renderer img {
-		visibility: visible;
+		opacity: 0;
 	}
 }
 

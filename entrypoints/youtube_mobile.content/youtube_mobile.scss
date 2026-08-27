@@ -90,3 +90,38 @@
 :root:not([sift-paused="true"])[youtube-shortform="block"][page-path*="/shorts/"] #player-container-id {
   display: none;
 }
+
+// Replaces thumbnails with a flat placeholder instead of removing them, so the list keeps
+// its layout and the titles stay readable. Uses opacity because m.youtube.com lazy-loads with
+// visibility; see the desktop stylesheet.
+:root:not([sift-paused="true"])[youtube-hide-thumbnails="true"] {
+  ytm-thumbnail-cover,
+  yt-thumbnail-view-model,
+  .video-thumbnail-container,
+  .media-item-thumbnail-container {
+    background-color: #313244;
+    border-radius: 12px;
+  }
+
+  ytm-thumbnail-cover img,
+  yt-thumbnail-view-model img,
+  .video-thumbnail-container img,
+  .media-item-thumbnail-container img {
+    opacity: 0;
+  }
+}
+
+// hides the comment teaser under the video and the comments engagement panel
+// element names confirmed against m.youtube.com, not guessed from the desktop ones
+:root:not([sift-paused="true"])[youtube-hide-comments="true"] {
+  // the teaser sits in the metadata carousel; hide the whole carousel item, not just the
+  // teaser inside it, or an empty card is left behind
+  yt-comment-teaser-carousel-item-view-model,
+  comments-entry-point-teaser-view-model {
+    display: none;
+  }
+
+  panel-container:has(ytm-comments-header-renderer, ytm-comment-thread-renderer) {
+    display: none;
+  }
+}
