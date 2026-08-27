@@ -4,7 +4,7 @@ import { ConfigurationShape } from "@/utils/Config";
 import { Toast, showToast } from "@/components/Toast";
 import MotivationalQuote from "@/components/MotivationalQuote";
 import DevPopup from "./devPopup";
-import { ghostButton, ghostButtonActive, mutedText } from "@/components/ui";
+import { ghostButton, ghostButtonActive, iconOnly, mutedText } from "@/components/ui";
 
 function App() {
   const optionsUrl = browser.runtime.getURL("/options.html");
@@ -95,7 +95,7 @@ function App() {
               <Show when={currentConfig()}>
                 <button
                   onClick={toggleDisabled}
-                  class={disabled() ? ghostButtonActive : ghostButton}
+                  class={`${disabled() ? ghostButtonActive : ghostButton} ${iconOnly}`}
                   title={disabled() ? "Turn Sift back on for this site" : "Turn Sift off on this site"}
                   aria-pressed={disabled()}
                 >
@@ -111,7 +111,7 @@ function App() {
                       <div class="flex items-center">
                         <button
                           onClick={togglePause}
-                          class={`${ghostButton} rounded-r-none`}
+                          class={`${ghostButton} ${iconOnly} rounded-r-none`}
                           title="Pause Sift"
                         >
                           ⏸
@@ -135,7 +135,7 @@ function App() {
               <a
                 href={optionsUrl}
                 target="_blank"
-                class={`${ghostButton} flex flex-row gap-1.5 items-center`}
+                class={ghostButton}
                 title="Open settings"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
