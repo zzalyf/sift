@@ -52,7 +52,7 @@ export const ConfigSection = (props: Props) => {
   }
 
   return (
-    <section data-key={props.key} class="break-inside-avoid p-4 flex flex-col gap-3">
+    <section data-key={props.key} class="break-inside-avoid p-3 sm:p-4 flex flex-col gap-3">
       <div class="flex justify-between items-center gap-2">
         <button
           class="flex items-center gap-2 flex-1 text-left cursor-pointer"
@@ -61,7 +61,18 @@ export const ConfigSection = (props: Props) => {
           disabled={!props.collapsible}
         >
           <Show when={props.collapsible}>
-            <span class="text-secondary text-xs w-3">{collapsed() ? "▶" : "▼"}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="text-secondary shrink-0 transition-transform"
+              classList={{ "-rotate-90": collapsed() }}
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6z" />
+            </svg>
           </Show>
           <h2 class="text-xl font-bold">{props.config.HumanName}</h2>
         </button>

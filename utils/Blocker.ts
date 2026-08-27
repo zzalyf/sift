@@ -9,8 +9,8 @@ function icon() {
 	const ns = "http://www.w3.org/2000/svg";
 	const svg = document.createElementNS(ns, "svg");
 	svg.setAttribute("viewBox", "0 0 512 512");
-	svg.setAttribute("width", "72");
-	svg.setAttribute("height", "72");
+	svg.setAttribute("width", "104");
+	svg.setAttribute("height", "104");
 	svg.setAttribute("aria-hidden", "true");
 
 	const bars: [number, number, number, number, number, string][] = [
@@ -33,6 +33,9 @@ function icon() {
 }
 
 const CSS = `
+/* Every length here is in px on purpose. rem follows the host page's root font-size, and
+   sites set that to whatever they like — YouTube uses 10px — which silently rescaled this
+   whole screen from one site to the next. */
 #sift-block {
 	position: fixed;
 	inset: 0;
@@ -40,26 +43,28 @@ const CSS = `
 	background: #1e1e2e;
 	color: #cdd6f4;
 	font-family: system-ui, sans-serif;
+	font-size: 16px;
+	line-height: 1.4;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 1rem;
+	gap: 18px;
 	text-align: center;
-	padding: 2rem;
+	padding: 32px;
 }
-#sift-block h1 { font-size: 1.5rem; font-weight: 700; color: #cba6f7; margin: 0; }
-#sift-block p { font-size: 0.95rem; color: #cdd6f4; margin: 0; }
-#sift-block .sift-quote { font-size: 0.8rem; font-style: italic; color: #585b70; }
+#sift-block h1 { font-size: 32px; font-weight: 700; color: #cba6f7; margin: 0; letter-spacing: -0.01em; }
+#sift-block p { font-size: 17px; color: #cdd6f4; margin: 0; }
+#sift-block .sift-quote { font-size: 14px; font-style: italic; color: #585b70; margin-top: 4px; }
 #sift-block button {
-	margin-top: 0.5rem;
-	font: inherit;
-	font-size: 0.85rem;
+	margin-top: 12px;
+	font-family: inherit;
+	font-size: 15px;
 	color: #cdd6f4;
 	background: #313244;
 	border: 1px solid #585b70;
-	border-radius: 0.75rem;
-	padding: 0.5rem 1rem;
+	border-radius: 12px;
+	padding: 10px 20px;
 	cursor: pointer;
 }
 #sift-block button:hover { border-color: #cba6f7; color: #cba6f7; }

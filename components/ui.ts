@@ -8,7 +8,7 @@ const buttonBase =
   "inline-flex items-center justify-center gap-1.5 h-[30px] px-2.5 rounded-lg text-sm transition-colors cursor-pointer";
 
 /** Outlined button: pause, reset, export, and every other secondary action. */
-export const ghostButton = `${buttonBase} border border-secondary text-secondary hover:border-primary hover:text-primary`;
+export const ghostButton = `${buttonBase} border border-secondary text-text hover:border-primary hover:text-primary`;
 
 /** The same button while it is holding a state on (Sift off on this site, for instance). */
 export const ghostButtonActive = `${buttonBase} border border-primary text-primary`;

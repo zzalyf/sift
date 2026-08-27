@@ -50,44 +50,47 @@ export default function ConfigPage() {
 
   return (
     <main class="bg-background min-h-svh text-text">
-      <header class="sticky top-0 z-10 bg-background border-b border-surface px-6 py-4 flex items-center gap-3">
+      <header class="sticky top-0 z-10 bg-background border-b border-surface px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center gap-x-3 gap-y-2">
         <img src="/icon.svg" class="w-10 h-10" aria-hidden="true" />
         <span class="text-2xl font-bold text-primary">Sift</span>
-        <MotivationalQuote class="flex-1 text-center px-4" />
-        <button
-          onClick={exportSettings}
-          class={ghostButton}
-          title="Export settings"
-        >
-          Export
-        </button>
-        <button
-          onClick={() => fileInputRef.click()}
-          class={ghostButton}
-          title="Import settings"
-        >
-          Import
-        </button>
-        <input
-          ref={(el) => (fileInputRef = el)}
-          type="file"
-          accept=".json"
-          class="hidden"
-          onChange={(e) => {
-            const file = e.currentTarget.files?.[0];
-            if (file) importSettings(file);
-            e.currentTarget.value = "";
-          }}
-        />
+        <span class={mutedText} title="Installed version">v{import.meta.env.VITE_APP_VERSION}</span>
+        <MotivationalQuote class="hidden lg:block flex-1 text-center px-4" />
+        <div class="flex items-center gap-2 ml-auto lg:ml-0">
+          <button
+            onClick={exportSettings}
+            class={ghostButton}
+            title="Export settings"
+          >
+            Export
+          </button>
+          <button
+            onClick={() => fileInputRef.click()}
+            class={ghostButton}
+            title="Import settings"
+          >
+            Import
+          </button>
+          <input
+            ref={(el) => (fileInputRef = el)}
+            type="file"
+            accept=".json"
+            class="hidden"
+            onChange={(e) => {
+              const file = e.currentTarget.files?.[0];
+              if (file) importSettings(file);
+              e.currentTarget.value = "";
+            }}
+          />
+        </div>
         <input
           type="search"
           placeholder="Search sites..."
           value={query()}
           onInput={(e) => setQuery(e.currentTarget.value)}
-          class={`${fieldControl} w-48 cursor-text placeholder-secondary`}
+          class={`${fieldControl} w-full lg:w-48 cursor-text placeholder-secondary`}
         />
       </header>
-      <div class="max-w-2xl mx-auto px-6 py-8 flex flex-col gap-4">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-3 sm:gap-4">
         <For each={filteredKeys()}>
           {(key) => <ConfigSection key={key} config={ConfigurationShape[key]} collapsible />}
         </For>

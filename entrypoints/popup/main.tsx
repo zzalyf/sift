@@ -116,8 +116,12 @@ function App() {
                           onClick={togglePause}
                           class={`${ghostButton} ${iconOnly} rounded-r-none`}
                           title="Pause Sift"
+                          aria-label="Pause Sift"
                         >
-                          ⏸
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <rect x="6" y="4" width="4" height="16" rx="1.2" />
+                            <rect x="14" y="4" width="4" height="16" rx="1.2" />
+                          </svg>
                         </button>
                         <button
                           onClick={pauseFor10m}
@@ -130,7 +134,10 @@ function App() {
                     }
                   >
                     <button onClick={togglePause} class={ghostButtonActive} title="Resume Sift">
-                      ▶ Resume
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      Resume
                     </button>
                   </Show>
                 </Show>
@@ -168,7 +175,10 @@ function App() {
               <ConfigSection key={configKey()} config={currentConfig()!} />
             </div>
           </Show>
-          <MotivationalQuote class="text-center px-4 pb-3" />
+          <div class="flex items-baseline justify-center gap-2 px-4 pb-3">
+            <MotivationalQuote class="text-center" />
+            <span class={mutedText}>v{import.meta.env.VITE_APP_VERSION}</span>
+          </div>
         </div>
         <Toast />
       </Show>
