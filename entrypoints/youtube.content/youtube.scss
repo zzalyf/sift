@@ -175,3 +175,41 @@ html:has(yt-page-navigation-progress:not([hidden=""])) {
 		transition: 0s;
 	}
 }
+
+// Replaces thumbnails with a flat placeholder instead of removing them, so the grid keeps
+// its layout and the titles stay readable.
+:root:not([sift-paused="true"])[youtube-hide-thumbnails="true"] {
+	ytd-thumbnail,
+	ytd-playlist-thumbnail,
+	yt-thumbnail-view-model,
+	yt-collection-thumbnail-view-model,
+	.ytp-videowall-still-image {
+		background-color: #313244;
+		border-radius: 12px;
+	}
+
+	ytd-thumbnail img,
+	ytd-playlist-thumbnail img,
+	yt-thumbnail-view-model img,
+	yt-collection-thumbnail-view-model img,
+	yt-image img.yt-core-image,
+	ytd-moving-thumbnail-renderer,
+	.ytp-videowall-still-image {
+		visibility: hidden;
+	}
+
+	// avatars are not thumbnails — keep faces so channels stay recognisable
+	#avatar img,
+	yt-avatar-shape img,
+	ytd-channel-renderer img {
+		visibility: visible;
+	}
+}
+
+// hides the comment section under videos
+:root:not([sift-paused="true"])[youtube-hide-comments="true"] {
+	ytd-comments#comments,
+	#comments {
+		display: none;
+	}
+}

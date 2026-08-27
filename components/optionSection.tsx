@@ -2,6 +2,7 @@ import { ConfigOption } from "./option";
 import QuickSettingsDropdown from "./QuickSettingsDropdown";
 import ConfirmationDialog from "./confiromationDialog";
 import { showToast } from "./Toast";
+import { LimitMinutes, LimitKey, UsageKey } from "@/utils/Config";
 
 type Props = {
   key: string;
@@ -20,6 +21,27 @@ export const ConfigSection = (props: Props) => {
         value: await storage.getItem(key.Key, { fallback: key.Values[0] }),
       }))
     );
+  });
+
+  // Site controls are deliberately left out of the Default/Max templates below: resetting
+  // the filters should not silently unblock a site or drop its daily limit.
+  const [siteValues, siteResource] = createResource(async () => {
+    return Promise.all(
+      props.config.SiteKeys.map(async (key) => ({
+        config: key,
+        value: await storage.getItem(key.Key, { fallback: key.Values[0] }),
+      }))
+    );
+  });
+
+  const [usage] = createResource(async () => {
+    const [limit, seconds] = await Promise.all([
+      storage.getItem<string>(LimitKey(props.config.Platform)),
+      storage.getItem<number>(UsageKey(props.config.Platform)),
+    ]);
+    const minutes = LimitMinutes(limit);
+    if (minutes === 0) return null;
+    return `${Math.round((seconds ?? 0) / 60)}m of ${minutes}m used today`;
   });
 
   const isMaxRequired = () => {
@@ -100,6 +122,26 @@ export const ConfigSection = (props: Props) => {
         />
       </div>
       <Show when={!props.collapsible || !collapsed()}>
+        <h3 class="text-xs font-semibold tracking-wide text-secondary uppercase mt-1">Site</h3>
+        <For each={siteValues() ?? []}>
+          {(option) => (
+            <ConfigOption
+              {...option}
+              onChange={(newValue) => {
+                storage.setItem(option.config.Key, newValue);
+                siteResource.refetch();
+                showToast(`${option.config.HumanName}: ${newValue}`);
+              }}
+            />
+          )}
+        </For>
+        <Show when={usage()}>
+          <p class="text-xs text-secondary px-2">{usage()}</p>
+        </Show>
+
+        <h3 class="text-xs font-semibold tracking-wide text-secondary uppercase mt-2">
+          Filtering
+        </h3>
         <For
           each={(values() ?? []).toSorted((a, b) =>
             a.config.HumanName.localeCompare(b.config.HumanName)

@@ -14,6 +14,8 @@ export default defineContentScript({
 function unfeeder() {
   AddPath();
 
+  if (!IsActive()) return;
+
   // close the sidebar
   const menuButton = document.getElementById("guide-button");
   const menuButtonButton = document.querySelector("#guide-button #button");

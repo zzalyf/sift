@@ -15,6 +15,7 @@ export default defineContentScript({
 });
 
 function scrollBlockerActive(event: Event) {
+  if (!IsActive()) return false;
   const inComments =
     (event.target as HTMLElement).closest("div:has(a img):not(:has(video))") !==
     null;
@@ -30,6 +31,7 @@ function onUpdate(key: string, value: string) {
 }
 
 function redirectToFollowing() {
+  if (!IsActive()) return;
   if (
     hideForYou === "true" &&
     location.pathname === "/" &&

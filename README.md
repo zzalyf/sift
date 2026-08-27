@@ -11,13 +11,16 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 - Hide shortform content (Reels, Shorts, TikToks)
 - Hide sidebar clutter (Grok, trending, who to follow, recommendations, etc.)
 - Site-aware popup: click the extension icon on any supported site to see only that site's settings
-- Pause / Pause for 10 minutes — temporarily disable filtering per site
+- Turn Sift off per site, without losing that site's settings
+- Pause / Pause for 10 minutes — temporarily stop filtering on a site
+- Block a site outright, or give it a daily time limit
+- Force dark mode on sites that have no dark theme
 - Export/import settings as JSON
 - Firefox Android support (tested on m.twitch.tv and mobile web)
 
 ## Supported Platforms
 
-- YouTube & YouTube Music
+- YouTube & YouTube Music (incl. hiding thumbnails and the comment section)
 - Twitter/X
 - Instagram
 - TikTok
@@ -32,14 +35,37 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
   - Hides Live Channels, Recommended Categories, Viewers Also Watch sidebar sections
   - Hides Open App prompt and Go Ad-Free upsell
 
+## Site controls
+
+Every supported site has the same four controls, independent of its filtering options:
+
+- **Turn off** (popup, power button) — Sift stops touching the site; settings are kept
+- **Pause** (popup, ⏸ / 10m) — same, but temporary
+- **Block Site** — replaces the site with a Sift screen, with a "5 more minutes" escape
+- **Daily Limit** — off / 5m / 15m / 30m / 1h / 2h; the same screen appears once you are over
+
+Time is only counted for sites that have a limit set, only while the tab is the active tab in
+the focused window, and only per device — usage lives in local storage, keyed by the local date.
+
 ## Config keys
+
+### Site
+
+**`{platform}-disabled`** — `"true"` / `"false"` — turns Sift off on that site entirely
+
+**`{platform}-blocked`** — `"true"` / `"false"` — blocks the site behind the Sift screen
+
+**`{platform}-daily-limit`** — `off` / `5m` / `15m` / `30m` / `1h` / `2h`
+
+**`{platform}-force-dark`** — `"true"` / `"false"` — uses the site's own dark theme where Sift
+knows it, and falls back to an inverting filter only if the page still renders light
 
 ### Shortform content
 
 **`{platform}-shortform`** — one of:
 
+- **`hide`** (default) — hides shortform from the UI but allows watching when shared directly
 - **`block`** — blocks shortform pages and hides shortform from the UI
-- **`hide`** — hides shortform from the UI but allows watching when shared directly
 - **`show`** — no change
 
 ### Feeds
@@ -52,7 +78,8 @@ A Firefox browser extension (forked from [Feedless](https://github.com/ZMensRain
 
 **`{platform}-paused`** — `"true"` / `"false"` / Unix timestamp — pauses all filtering for that site; a timestamp value auto-resumes at that time
 
-> Default for all options is the most restrictive value.
+> Default for the feed options is the most restrictive value. The site controls above default
+> to off — Sift never blocks or limits a site until you ask it to.
 
 ## Building
 

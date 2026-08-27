@@ -15,6 +15,7 @@ export default defineContentScript({
 });
 
 function scrollBlockerActive(event: Event) {
+  if (!IsActive()) return false;
   const inComments =
     (event.target as HTMLElement).closest("panel-container") !== null;
 
@@ -28,6 +29,8 @@ function onUpdate(key: string, value: string) {
 
 function unfeeder() {
   AddPath();
+
+  if (!IsActive()) return;
 
   if (hideNextFeed === "true") {
     (

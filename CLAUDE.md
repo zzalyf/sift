@@ -28,7 +28,15 @@ attribute, stripping the `sync:` prefix. SCSS then gates on that attribute:
 ```
 
 Supporting attributes: `AddPath()` → `page-path`, `AddParams()` → `page-params`,
-`sift-paused` → set by the pause logic.
+`sift-paused` → set whenever Sift is off on the site, `sift-ready` → set once Config() has
+read storage.
+
+`sift-paused` is the single "Sift is off here" attribute: both Pause and the per-site disable
+set it, so the 13 SCSS files gate on one thing. `sift-disabled` is set alongside it for the
+popup and badge, and nothing in CSS reads it.
+
+JS effects must call `IsActive()` first — redirects, clicks and scroll blockers have no CSS
+gate, so without it they run while paused and before storage has been read.
 
 Use JS only when CSS genuinely can't do it — redirects, marking elements the selector can't
 reach (`data-sift-hide` in twitch.content), scroll blocking. When you do, still hide via CSS
@@ -47,9 +55,25 @@ reach (`data-sift-hide` in twitch.content), scroll blocking. When you do, still 
   or the bundled background script hits a TDZ error. Don't reorder.
 - **Colors** come from the `@theme` tokens in assets/tailwind.css (Catppuccin). Use the tokens.
 
+## Site Controls
+Every platform gets the same four site-level keys from `siteKeys()` in utils/Config.ts:
+`-disabled`, `-blocked`, `-daily-limit`, `-force-dark`. They live in `SiteKeys`, separate from
+the filtering `Keys`, and the Default/Max quick settings deliberately ignore them — resetting
+filters must not silently unblock a site.
+
+`initSiteControls()` in utils/Config.ts is the one place these combine: it owns the storage
+watches, decides whether the site is off / blocked, and drives `Blocker.ts` and `DarkMode.ts`.
+Add site-level behaviour there, not in a content script.
+
+The daily limit is counted in the background (15s ticks, focused window's active tab only,
+and only for sites that actually have a limit). Usage is a `local:` key carrying the local
+date; the content script re-points its watch at local midnight, so a tab left open overnight
+does not stay blocked on yesterday's total.
+
 ## Adding a Platform
-1. Entry in `ConfigurationShape` (utils/Config.ts), **keyed by the exact hostname** the popup
-   will see from `new URL(tab.url).hostname`.
+1. Entry in `ConfigurationShape` (utils/Config.ts) via `platformConfig(slug, name, keys)`,
+   **keyed by the exact hostname** the popup will see from `new URL(tab.url).hostname`. The
+   slug is what every storage key is built from.
 2. `entrypoints/{name}.content/index.ts` + `{name}.scss`, with `runAt: "document_start"`.
 3. `matches` in the content script.
 4. If the site has alternate hostnames (m.*, x.com), add them to `hostnameAliases` — which

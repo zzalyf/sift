@@ -41,6 +41,12 @@ function markSidebarSections() {
 }
 
 function hideElements() {
+	// Paused or disabled: undo the marks, otherwise the sections stay hidden until reload.
+	if (!IsActive()) {
+		clearMarks();
+		return;
+	}
+
 	if (hideLiveChannels !== "false") {
 		if (location.hostname === "www.twitch.tv" && location.pathname === "/") {
 			location.replace("/directory/following");
@@ -83,6 +89,14 @@ function hideElements() {
 			el.style.display = "none";
 		});
 	}
+}
+
+function clearMarks() {
+	if (!document.querySelector("[data-sift-hide]")) return;
+	document.querySelectorAll<HTMLElement>("[data-sift-hide]").forEach(el => el.removeAttribute("data-sift-hide"));
+	document
+		.querySelectorAll<HTMLElement>("[data-a-target*='ad-free'], [data-test-selector*='ad-free']")
+		.forEach(el => el.style.removeProperty("display"));
 }
 
 function unfeeder() {

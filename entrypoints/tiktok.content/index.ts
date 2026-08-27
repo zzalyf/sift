@@ -15,6 +15,7 @@ export default defineContentScript({
 });
 
 function scrollBlockerActive(event: Event) {
+  if (!IsActive()) return false;
   const inComments =
     (event.target as HTMLElement).closest(
       `[class*="DivCommentListContainer"`

@@ -10,6 +10,7 @@ function App() {
   const [currentConfig, setCurrentConfig] = createSignal<PlatformConfiguration | null>(null);
   const [configKey, setConfigKey] = createSignal<string>("");
   const [paused, setPaused] = createSignal(false);
+  const [disabled, setDisabled] = createSignal(false);
   const [showDev, setShowDev] = createSignal(
     import.meta.env.DEV && import.meta.env.WXT_SHOW_DEV_POPUP == "true"
   );
@@ -34,9 +35,13 @@ function App() {
       if (config) {
         setCurrentConfig(config);
         setConfigKey(key);
-        const val = await storage.getItem<string>(config.PauseKey);
+        const [val, off] = await Promise.all([
+          storage.getItem<string>(config.PauseKey),
+          storage.getItem<string>(config.DisabledKey),
+        ]);
         const isPaused = val === "true" || (!!val && val !== "false" && Date.now() < parseInt(val));
         setPaused(isPaused);
+        setDisabled(off === "true");
       }
     } catch {}
   });
@@ -54,6 +59,15 @@ function App() {
     if (!config) return;
     await storage.setItem(config.PauseKey, String(Date.now() + 10 * 60 * 1000));
     setPaused(true);
+  }
+
+  async function toggleDisabled() {
+    const config = currentConfig();
+    if (!config) return;
+    const off = !disabled();
+    await storage.setItem(config.DisabledKey, String(off));
+    setDisabled(off);
+    showToast(off ? `Sift off on ${config.HumanName}` : `Sift on for ${config.HumanName}`);
   }
 
   return (
@@ -78,34 +92,51 @@ function App() {
             </h1>
             <div class="flex items-center gap-2">
               <Show when={currentConfig()}>
-                <Show
-                  when={paused()}
-                  fallback={
-                    <div class="flex items-center">
-                      <button
-                        onClick={togglePause}
-                        class="text-sm px-2 py-1 rounded-l-lg border border-secondary hover:border-primary transition-colors text-secondary"
-                        title="Pause Sift"
-                      >
-                        ⏸ Pause
-                      </button>
-                      <button
-                        onClick={pauseFor10m}
-                        class="text-sm px-2 py-1 rounded-r-lg border-t border-b border-r border-secondary hover:border-primary transition-colors text-secondary"
-                        title="Pause for 10 minutes"
-                      >
-                        10m
-                      </button>
-                    </div>
-                  }
+                <button
+                  onClick={toggleDisabled}
+                  class="text-sm px-2 py-1 rounded-lg border transition-colors"
+                  classList={{
+                    "border-primary text-primary": disabled(),
+                    "border-secondary text-secondary hover:border-primary": !disabled(),
+                  }}
+                  title={disabled() ? "Turn Sift back on for this site" : "Turn Sift off on this site"}
+                  aria-pressed={disabled()}
                 >
-                  <button
-                    onClick={togglePause}
-                    class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors text-primary"
-                    title="Resume Sift"
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2v10" />
+                    <path d="M18.4 6.6a9 9 0 1 1-12.77.04" />
+                  </svg>
+                </button>
+                <Show when={!disabled()}>
+                  <Show
+                    when={paused()}
+                    fallback={
+                      <div class="flex items-center">
+                        <button
+                          onClick={togglePause}
+                          class="text-sm px-2 py-1 rounded-l-lg border border-secondary hover:border-primary transition-colors text-secondary"
+                          title="Pause Sift"
+                        >
+                          ⏸
+                        </button>
+                        <button
+                          onClick={pauseFor10m}
+                          class="text-sm px-2 py-1 rounded-r-lg border-t border-b border-r border-secondary hover:border-primary transition-colors text-secondary"
+                          title="Pause for 10 minutes"
+                        >
+                          10m
+                        </button>
+                      </div>
+                    }
                   >
-                    ▶ Resume
-                  </button>
+                    <button
+                      onClick={togglePause}
+                      class="text-sm px-2 py-1 rounded-lg border border-secondary hover:border-primary transition-colors text-primary"
+                      title="Resume Sift"
+                    >
+                      ▶ Resume
+                    </button>
+                  </Show>
                 </Show>
               </Show>
               <a
@@ -121,6 +152,12 @@ function App() {
               </a>
             </div>
           </div>
+
+          <Show when={disabled() && currentConfig()}>
+            <p class="text-xs text-secondary px-4 pb-2">
+              Sift is off on {currentConfig()!.HumanName}. Your settings are kept.
+            </p>
+          </Show>
 
           <Show
             when={currentConfig()}

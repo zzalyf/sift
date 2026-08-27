@@ -17,7 +17,9 @@ export default function ConfigPage() {
   async function exportSettings() {
     const allKeys = Object.values(ConfigurationShape).flatMap((c) => [
       c.PauseKey,
+      c.DisabledKey,
       ...c.Keys.map((k) => k.Key),
+      ...c.SiteKeys.map((k) => k.Key),
     ]);
     const entries = await Promise.all(
       allKeys.map(async (key) => [key, await storage.getItem<string>(key)] as const)
